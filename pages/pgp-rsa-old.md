@@ -1,0 +1,81 @@
+---
+uid: tJzDDGxWVJVfEdMjuWyS
+title: "PGP-RSA (old)"
+slug: "pgp-rsa-old"
+alias: ""
+published_date: "2024-08-13T23:29:00+00:00"
+tags: ""
+draft: false
+discoverable: True
+is_page: True
+canonical_url: ""
+description: ""
+image: ""
+lang: ""
+class_name: ""
+first_published_at: "2024-08-13T23:29:58.082330+00:00"
+---
+
+# Chìa không còn được sử dụng.
+
+> Check chữ ký xác thực chìa mới: [https://snippet.host/grcaee/raw](https://snippet.host/grcaee/raw) - Chìa mới cập nhật [tại đây](https://chatlongmaudo-meta.bearblog.dev/pgp-key/)
+
+```
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Comment: User-ID:	chatlongmaudo29@protonmail.com <chatlongmaudo29@protonmail.com>
+Comment: Created:	8/29/23 11:48 PM
+Comment: Type:	4.096-bit RSA (secret key available)
+Comment: Usage:	Signing, Encryption, Certifying User-IDs
+Comment: Fingerprint:	238A67820DC4FACB68C789F2CE469B4AD3831A9E
+
+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
+Jk/ogHdPyVCOSUodwh+kJghjC9u1D0A=
+=uGq6
+-----END PGP PUBLIC KEY BLOCK-----
+```
