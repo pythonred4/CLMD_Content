@@ -123,29 +123,72 @@ class ContentSubmissionHandler {
         return 'sub_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
     
-    async submitContent(data) {
-        // In a real implementation, this would send to your backend or Netlify
-        // For now, we'll simulate the submission process
-        
-        console.log('Submitting content:', data);
-        
-        // Simulate API call delay
-        await this.delay(2000);
-        
-        // Simulate different submission methods based on configuration
-        const submissionMethod = this.getSubmissionMethod();
-        
-        switch (submissionMethod) {
-            case 'github-api':
-                return await this.submitViaGitHubAPI(data);
-            case 'netlify':
-                return await this.submitViaNetlify(data);
-            case 'webhook':
-                return await this.submitViaWebhook(data);
-            default:
-                return await this.simulateSubmission(data);
+            async submitContent(data) {
+            // In a real implementation, this would send to your backend or Netlify
+            // For now, we'll simulate the submission process
+            
+            console.log('Submitting content:', data);
+            
+            // Simulate API call delay
+            await this.delay(2000);
+            
+            // Try to trigger the GitHub Actions workflow
+            if (window.contentWorkflowTrigger) {
+                try {
+                    console.log('Attempting to trigger GitHub Actions workflow...');
+                    
+                    // Extract title from content if not provided
+                    let contentTitle = data['content-title'] || data.title;
+                    if (!contentTitle) {
+                        // Try to extract title from markdown content
+                        const contentLines = data.content.split('\n');
+                        for (const line of contentLines) {
+                            if (line.startsWith('# ')) {
+                                contentTitle = line.substring(2).trim();
+                                break;
+                            }
+                        }
+                        if (!contentTitle) {
+                            contentTitle = 'Content Submission';
+                        }
+                    }
+                    
+                    const workflowData = {
+                        content_type: data['content-type'],
+                        content_title: contentTitle,
+                        content_summary: data.summary || '',
+                        test_mode: false
+                    };
+                    
+                    const result = await window.contentWorkflowTrigger.triggerWorkflow(workflowData);
+                    console.log('Workflow trigger result:', result);
+                    
+                    if (result.success) {
+                        return {
+                            success: true,
+                            message: 'Content submitted and workflow triggered successfully!',
+                            workflow_result: result
+                        };
+                    }
+                } catch (error) {
+                    console.warn('Failed to trigger workflow, falling back to simulation:', error);
+                }
+            }
+            
+            // Fallback to simulation if workflow trigger fails
+            const submissionMethod = this.getSubmissionMethod();
+            
+            switch (submissionMethod) {
+                case 'github-api':
+                    return await this.submitViaGitHubAPI(data);
+                case 'netlify':
+                    return await this.submitViaNetlify(data);
+                case 'webhook':
+                    return await this.submitViaWebhook(data);
+                default:
+                    return await this.simulateSubmission(data);
+            }
         }
-    }
     
     getSubmissionMethod() {
         // This could be configured via environment variables or config file
