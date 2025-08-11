@@ -16,3 +16,5 @@ slug: "\"testingarea\""
   Your browser does not support the video tag.
 </video>
 {{< /rawhtml >}}
+
+{{< image-caption src="https://files.catbox.moe/gntzpo.jpeg" alt="Sample image" caption="Hình con cáo trốn sau cây" class="custom-style" >}}
