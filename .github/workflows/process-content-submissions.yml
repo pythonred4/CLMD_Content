@@ -110,7 +110,7 @@ jobs:
 
   notify-main-repo:
     needs: process-submission
-    if: steps.process.outputs.has_changes == 'true' && steps.process.outputs.test_mode != 'true'
+    if: needs.process-submission.outputs.has_changes == 'true' && needs.process-submission.outputs.test_mode != 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -119,6 +119,6 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.REPO_TOKEN }}
-          repository: vsmz4laj7n/CLMĐ_SITE
+          repository: vsmz4laj7n/HugoTesting
           event-type: update-content-submodule
           client-payload: '{"submission_id": "${{ needs.process-submission.outputs.submission_id }}", "title": "${{ needs.process-submission.outputs.submission_title }}", "status": "imported", "trigger": "content_submission"}'
