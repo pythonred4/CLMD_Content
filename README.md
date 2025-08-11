@@ -1,6 +1,56 @@
-# 📝 Hệ Thống Gửi Nội Dung Tự Động
+# 📝 Hệ Thống Gửi Nội Dung - Content Submission Hub
 
-Hệ thống gửi nội dung tự động cho GitHub Pages với khả năng tạo Pull Request và phân loại file tự động.
+**Lưu ý quan trọng**: Repository này là một **Content Submission Hub** (Trung tâm gửi nội dung), không phải là Hugo static website. Nó có nhiệm vụ:
+
+1. **Thu thập nội dung** từ người dùng qua form
+2. **Tạo Pull Request** tự động cho việc review
+3. **Khi merge content** → trigger workflow để sync với **private Hugo repository**
+
+## 🏗️ Kiến Trúc Hệ Thống
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    USER INTERFACE                          │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │              submit-form.html                       │   │
+│  │           (GitHub Pages Form)                      │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│              CONTENT SUBMISSION HUB                        │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │           This Repository                           │   │
+│  │        (GitHub Pages + Actions)                    │   │
+│  │                                                     │   │
+│  │  ┌─────────────────────────────────────────────┐   │   │
+│  │  │        process-content-submissions.yml      │   │   │
+│  │  │         (Creates PR + Files)               │   │   │
+│  │  └─────────────────────────────────────────────┘   │   │
+│  │                                                     │   │
+│  │  ┌─────────────────────────────────────────────┐   │   │
+│  │  │           dispatch-update.yml              │   │   │
+│  │  │      (Signals Private Hugo Repo)           │   │   │
+│  │  └─────────────────────────────────────────────┘   │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼ (Repository Dispatch)
+┌─────────────────────────────────────────────────────────────┐
+│              PRIVATE HUGO REPOSITORY                       │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │           vsmz4laj7n/HugoTesting                  │   │
+│  │        (Actual Hugo Static Website)               │   │
+│  │                                                     │   │
+│  │  ┌─────────────────────────────────────────────┐   │   │
+│  │  │         Content Sync Workflow               │   │   │
+│  │  │      (Updates content/ folder)             │   │   │
+│  │  │      (Rebuilds Hugo site)                  │   │   │
+│  │  └─────────────────────────────────────────────┘   │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ## 🚀 Tính Năng Chính
 
@@ -8,63 +58,119 @@ Hệ thống gửi nội dung tự động cho GitHub Pages với khả năng t�
 - ✅ **Hỗ Trợ Markdown**: Viết nội dung với Markdown
 - ✅ **YAML Header Tự Động**: Header được tạo tự động từ nội dung
 - ✅ **Phân Loại Tự Động**: File được đặt đúng thư mục dựa trên loại nội dung
-- ✅ **Tạo Pull Request**: Tự động tạo PR trên GitHub
+- ✅ **Tạo Pull Request**: Tự động tạo PR trên GitHub cho review
 - ✅ **Xem Trước Markdown**: Kiểm tra nội dung trước khi gửi
 - ✅ **Không Cần Tài Khoản**: Gửi nội dung ẩn danh
+- ✅ **Tự Động Sync**: Khi merge → tự động sync với Hugo repo
 
 ## 📁 Cấu Trúc Thư Mục
 
 ```
 ├── submit-form.html          # Form gửi nội dung chính
+├── form-handler.js          # JavaScript xử lý form
+├── config.js                # File cấu hình hệ thống
+├── demo.html                # Trang demo và test
 ├── pages/
-│   └── submit-content.md     # Trang hướng dẫn gửi nội dung
-├── Video-Single/             # Nội dung video đơn lẻ
-├── Post-Single/              # Bài viết đơn lẻ
-├── posts/                    # Tập hợp bài viết
-├── pages/                    # Trang tĩnh
+│   └── submit-content.md     # Hướng dẫn sử dụng
+├── Video-Single/             # Nội dung video đơn lẻ (tạm thời)
+├── Post-Single/              # Bài viết đơn lẻ (tạm thời)
+├── posts/                    # Tập hợp bài viết (tạm thời)
+├── pages/                    # Trang tĩnh (tạm thời)
 ├── .github/
 │   ├── workflows/
-│   │   └── process-content-submissions.yml  # Workflow xử lý
+│   │   ├── process-content-submissions.yml  # Xử lý nội dung gửi lên
+│   │   └── dispatch-update.yml              # Gửi signal đến Hugo repo
 │   └── scripts/
 │       └── process_submission.py            # Script xử lý Python
 └── README.md                 # File này
 ```
 
+## 🔄 Quy Trình Hoạt Động
+
+### 1. **Gửi Nội Dung** (User → This Repo)
+1. Người dùng mở `submit-form.html`
+2. Chọn loại nội dung và viết nội dung
+3. Gửi form → trigger GitHub Actions workflow
+
+### 2. **Xử Lý Nội Dung** (This Repo)
+1. `process-content-submissions.yml` được kích hoạt
+2. Python script xử lý và validate nội dung
+3. Tạo file Markdown với YAML header
+4. Tạo Pull Request cho admin review
+
+### 3. **Review & Merge** (Admin)
+1. Admin review nội dung trong PR
+2. Merge PR vào main branch
+3. Trigger `dispatch-update.yml` workflow
+
+### 4. **Sync với Hugo Repo** (This Repo → Private Hugo Repo)
+1. `dispatch-update.yml` gửi repository dispatch event
+2. Signal được gửi đến `vsmz4laj7n/HugoTesting`
+3. Hugo repo nhận signal và sync content
+
+### 5. **Cập Nhật Website** (Private Hugo Repo)
+1. Content được sync vào `content/` folder
+2. Hugo site được rebuild
+3. Website được deploy với nội dung mới
+
 ## 🔧 Cài Đặt & Cấu Hình
 
 ### 1. Yêu Cầu Hệ Thống
 
-- GitHub repository với GitHub Pages
-- GitHub Actions được bật
+- **This Repository**: GitHub Pages + GitHub Actions
+- **Private Hugo Repository**: `vsmz4laz7n/HugoTesting` (hoặc repo của bạn)
 - Python 3.11+ (cho script xử lý)
 
 ### 2. Cấu Hình GitHub Actions
 
-Hệ thống sử dụng workflow `process-content-submissions.yml` để xử lý nội dung gửi lên.
-
 #### Secrets Cần Thiết:
 
 ```bash
+# Cho repository này (Content Submission Hub)
 GITHUB_TOKEN          # Token GitHub (tự động có)
 NETLIFY_TOKEN         # Token Netlify (nếu sử dụng Netlify)
 NETLIFY_SITE_ID       # ID site Netlify
-REPO_TOKEN            # Token cho repository chính
+
+# Cho việc gửi signal đến Hugo repo
+PAT                   # Personal Access Token với quyền repo
 ```
 
-### 3. Cấu Hình Netlify (Tùy Chọn)
+#### Repository Dispatch Configuration:
 
-Nếu bạn muốn sử dụng Netlify để nhận form submissions:
-
-1. Tạo site trên Netlify
-2. Thêm form vào `submit-form.html`:
-
-```html
-<form name="content-submission" method="POST" data-netlify="true">
-  <!-- form fields -->
-</form>
+```yaml
+# .github/workflows/dispatch-update.yml
+repository: your-username/your-hugo-repo  # Thay đổi thành Hugo repo của bạn
+event-type: update-content-submodule      # Event type để Hugo repo nhận
 ```
 
-3. Cấu hình webhook để trigger GitHub Actions
+### 3. Cấu Hình Hugo Repository
+
+Hugo repository cần có workflow để nhận repository dispatch event:
+
+```yaml
+# Trong Hugo repo (.github/workflows/sync-content.yml)
+name: Sync Content from Submission Hub
+on:
+  repository_dispatch:
+    types:
+      - update-content-submodule
+
+jobs:
+  sync-content:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Hugo repo
+        uses: actions/checkout@v4
+      
+      - name: Sync content from submission hub
+        # Logic để sync content từ submission hub
+      
+      - name: Build Hugo site
+        # Build Hugo site với content mới
+      
+      - name: Deploy
+        # Deploy website
+```
 
 ## 📝 Cách Sử Dụng
 
@@ -84,59 +190,23 @@ Nếu bạn muốn sử dụng Netlify để nhận form submissions:
 3. **Xử Lý Nội Dung**: Script Python xử lý và validate nội dung
 4. **Tạo File**: Tạo file Markdown với YAML header phù hợp
 5. **Tạo Pull Request**: Tự động tạo PR cho admin review
-6. **Phê Duyệt**: Admin review và merge PR
-
-### 3. Cấu Trúc File Được Tạo
-
-Mỗi file sẽ có YAML header tự động:
-
-```yaml
----
-uid: abc123def
-title: "Tiêu Đề Bài Viết"
-slug: "tieu-de-bai-viet-abc1"
-alias: ""
-published_date: "2025-01-01T00:00:00Z"
-tags: "tag1, tag2, tag3"
-draft: true
-discoverable: true
-is_page: false
-canonical_url: ""
-description: "Tóm tắt nội dung"
-image: ""
-lang: "vi"
-class_name: ""
-first_published_at: "2025-01-01T00:00:00Z"
----
-
-# Nội dung Markdown của bạn ở đây
-```
-
-## 🔄 Workflow GitHub Actions
-
-### Trigger Events
-
-- `repository_dispatch`: Kích hoạt từ webhook bên ngoài
-- `workflow_dispatch`: Kích hoạt thủ công từ GitHub UI
-
-### Jobs
-
-1. **process-submission**: Xử lý nội dung gửi lên
-2. **notify-main-repo**: Thông báo cho repository chính (nếu cần)
-
-### Outputs
-
-Workflow tạo các outputs sau:
-
-- `has_changes`: Có thay đổi hay không
-- `submission_id`: ID của submission
-- `submission_title`: Tiêu đề nội dung
-- `content_type`: Loại nội dung
-- `target_path`: Đường dẫn file được tạo
+6. **Xem Xét**: Admin review và phê duyệt nội dung
+7. **Merge**: Merge PR vào main branch
+8. **Sync Signal**: Gửi signal đến Hugo repository
+9. **Content Sync**: Hugo repo sync content và rebuild website
 
 ## 🛠️ Tùy Chỉnh
 
-### 1. Thay Đổi Loại Nội Dung
+### 1. Thay Đổi Hugo Repository
+
+Chỉnh sửa `.github/workflows/dispatch-update.yml`:
+
+```yaml
+repository: your-username/your-hugo-repo  # Thay đổi thành repo của bạn
+event-type: your-custom-event-type       # Thay đổi event type nếu cần
+```
+
+### 2. Thay Đổi Loại Nội Dung
 
 Chỉnh sửa `content_type_mappings` trong `process_submission.py`:
 
@@ -150,34 +220,24 @@ self.content_type_mappings = {
 }
 ```
 
-### 2. Thay Đổi Cấu Trúc YAML Header
+### 3. Cấu Hình Form Handler
 
-Chỉnh sửa hàm `create_content_file` trong `process_submission.py`:
+Chỉnh sửa `config.js`:
 
-```python
-front_matter = {
-    'uid': uid,
-    'title': title,
-    'slug': slug,
-    # Thêm fields mới
-    'custom_field': 'value',
-    # ...
-}
-```
-
-### 3. Thay Đổi Validation Rules
-
-Chỉnh sửa hàm `validate_submission` trong `process_submission.py`:
-
-```python
-def validate_submission(self, submission):
-    errors = []
-    
-    # Thêm validation rules mới
-    if len(submission.get('content', '')) > 100000:
-        errors.append("Content too long")
-    
-    return errors
+```javascript
+const ContentSubmissionConfig = {
+    submissionMethod: 'github-api', // hoặc 'netlify', 'webhook'
+    github: {
+        owner: 'your-username',
+        repo: 'your-content-hub-repo',  // Repository này
+        branch: 'main'
+    },
+    hugoRepo: {
+        owner: 'your-username',
+        repo: 'your-hugo-repo',         // Hugo repository
+        eventType: 'update-content-submodule'
+    }
+};
 ```
 
 ## 🧪 Testing
@@ -193,39 +253,34 @@ Sử dụng workflow dispatch với test mode:
    - `test_content`: Nội dung test
    - `test_content_type`: Loại nội dung test
 
-### Manual Testing
+### Test Repository Dispatch
 
-```bash
-# Chạy script trực tiếp
-cd .github/scripts
-python process_submission.py
-
-# Với environment variables
-TEST_MODE=true TEST_CONTENT="# Test" python process_submission.py
-```
+1. Merge một PR test
+2. Kiểm tra `dispatch-update.yml` workflow
+3. Verify signal được gửi đến Hugo repo
 
 ## 🚨 Troubleshooting
 
 ### Lỗi Thường Gặp
 
-1. **Permission Denied**: Kiểm tra GitHub token permissions
-2. **Workflow Not Triggered**: Kiểm tra webhook configuration
-3. **File Not Created**: Kiểm tra Python script logs
-4. **Pull Request Not Created**: Kiểm tra workflow outputs
+1. **Permission Denied**: Kiểm tra PAT token permissions
+2. **Repository Dispatch Failed**: Kiểm tra repository name và event type
+3. **Hugo Repo Not Responding**: Kiểm tra workflow trong Hugo repo
+4. **Content Not Syncing**: Kiểm tra sync workflow trong Hugo repo
 
 ### Debug
 
-1. Kiểm tra GitHub Actions logs
-2. Kiểm tra Python script output
-3. Verify environment variables
-4. Test với test mode
+1. Kiểm tra GitHub Actions logs trong cả hai repo
+2. Verify repository dispatch event được gửi
+3. Kiểm tra Hugo repo workflow configuration
+4. Test với test mode trước
 
 ## 📚 Tài Liệu Tham Khảo
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Netlify Forms](https://docs.netlify.com/forms/setup/)
-- [Python YAML](https://pyyaml.org/)
-- [Markdown Guide](https://www.markdownguide.org/)
+- [Repository Dispatch API](https://docs.github.com/en/rest/repos/repos#create-a-repository-dispatch-event)
+- [Hugo Documentation](https://gohugo.io/documentation/)
+- [GitHub Pages](https://docs.github.com/en/pages)
 
 ## 🤝 Đóng Góp
 
@@ -243,8 +298,16 @@ Dự án này được phát hành dưới MIT License.
 
 ---
 
+## 🔗 Liên Kết Quan Trọng
+
+- **Content Submission Form**: [submit-form.html](submit-form.html)
+- **Demo & Testing**: [demo.html](demo.html)
+- **User Guide**: [pages/submit-content.md](pages/submit-content.md)
+- **Configuration**: [config.js](config.js)
+
 **Lưu ý**: Đây là hệ thống demo. Trong môi trường production, hãy đảm bảo:
 - Bảo mật thông tin người dùng
 - Rate limiting cho form submissions
 - Backup và monitoring
 - Error handling đầy đủ
+- Proper repository permissions
