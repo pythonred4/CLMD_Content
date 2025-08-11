@@ -27,11 +27,18 @@ on:
         required: false
         default: false
         type: boolean
+  # Add webhook trigger for form submissions
   repository_dispatch:
     types:
       - create-content-branch
       - content-submission
       - form-submission
+  # Trigger when pending content is added
+  push:
+    branches:
+      - main
+    paths:
+      - 'pending-content/**'
 
 jobs:
   create-content-branch:
@@ -63,23 +70,59 @@ jobs:
           
           echo "Created and switched to branch: ${{ steps.branch-name.outputs.branch_name }}"
 
-      - name: Create content file
-        id: create-content
+      - name: Check for pending content
+        id: check-pending
         run: |
-          # Get inputs from either workflow_dispatch or repository_dispatch
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            # Manual workflow dispatch
+            # Manual workflow dispatch - create test content
             CONTENT_TYPE="${{ github.event.inputs.content_type }}"
             CONTENT_TITLE="${{ github.event.inputs.content_title }}"
             CONTENT_SUMMARY="${{ github.event.inputs.content_summary }}"
             TEST_MODE="${{ github.event.inputs.test_mode }}"
+            HAS_PENDING=false
           else
-            # Repository dispatch (from form submission)
-            CONTENT_TYPE="${{ github.event.client_payload.content_type || 'post-single' }}"
-            CONTENT_TITLE="${{ github.event.client_payload.content_title || 'Content Submission' }}"
-            CONTENT_SUMMARY="${{ github.event.client_payload.content_summary || '' }}"
-            TEST_MODE="${{ github.event.client_payload.test_mode || 'false' }}"
+            # Check for pending content files
+            if [ -d "pending-content" ]; then
+              PENDING_FILES=$(find pending-content -name "*.md" -type f | head -1)
+              if [ -n "$PENDING_FILES" ]; then
+                echo "📁 Found pending content: $PENDING_FILES"
+                HAS_PENDING=true
+                
+                # Extract content type from path
+                CONTENT_TYPE=$(echo "$PENDING_FILES" | sed 's|pending-content/\([^/]*\)/.*|\1|')
+                
+                # Read content from file
+                CONTENT_TITLE=$(grep '^title:' "$PENDING_FILES" | sed 's/^title: "\(.*\)"/\1/')
+                CONTENT_SUMMARY=$(grep '^description:' "$PENDING_FILES" | sed 's/^description: "\(.*\)"/\1/')
+                TEST_MODE=false
+                
+                echo "📋 Extracted data:"
+                echo "  Type: $CONTENT_TYPE"
+                echo "  Title: $CONTENT_TITLE"
+                echo "  Summary: $CONTENT_SUMMARY"
+              else
+                echo "❌ No pending content files found"
+                HAS_PENDING=false
+                CONTENT_TYPE="post-single"
+                CONTENT_TITLE="No Content"
+                CONTENT_SUMMARY=""
+                TEST_MODE=false
+              fi
+            else
+              echo "❌ No pending-content directory found"
+              HAS_PENDING=false
+              CONTENT_TYPE="post-single"
+              CONTENT_TITLE="No Content"
+              CONTENT_SUMMARY=""
+              TEST_MODE=false
+            fi
           fi
+          
+          echo "content_type=$CONTENT_TYPE" >> $GITHUB_OUTPUT
+          echo "content_title=$CONTENT_TITLE" >> $GITHUB_OUTPUT
+          echo "content_summary=$CONTENT_SUMMARY" >> $GITHUB_OUTPUT
+          echo "test_mode=$TEST_MODE" >> $GITHUB_OUTPUT
+          echo "has_pending=$HAS_PENDING" >> $GITHUB_OUTPUT
           
           # Generate unique ID
           UNIQUE_ID=$(openssl rand -hex 4)
@@ -115,82 +158,102 @@ jobs:
           # Create target folder if it doesn't exist
           mkdir -p "$TARGET_FOLDER"
           
-          # Create YAML front matter
-          echo "---" > "$TARGET_FOLDER/$FILENAME"
-          echo "uid: $UNIQUE_ID" >> "$TARGET_FOLDER/$FILENAME"
-          echo "title: \"$CONTENT_TITLE\"" >> "$TARGET_FOLDER/$FILENAME"
-          echo "slug: \"$SLUG\"" >> "$TARGET_FOLDER/$FILENAME"
-          echo "alias: \"\"" >> "$TARGET_FOLDER/$FILENAME"
-          echo "published_date: \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"" >> "$TARGET_FOLDER/$FILENAME"
-          echo "tags: \"\"" >> "$TARGET_FOLDER/$FILENAME"
-          echo "draft: true" >> "$TARGET_FOLDER/$FILENAME"
-          echo "discoverable: true" >> "$TARGET_FOLDER/$FILENAME"
-          
-          # Set is_page based on content type
-          if [ "$CONTENT_TYPE" = "pages" ]; then
-            echo "is_page: true" >> "$TARGET_FOLDER/$FILENAME"
+          if [ "${{ steps.check-pending.outputs.has_pending }}" = "true" ]; then
+            # Process pending content file
+            PENDING_FILE=$(find pending-content -name "*.md" -type f | head -1)
+            echo "📁 Processing pending content: $PENDING_FILE"
+            
+            # Copy content from pending file to final location
+            cp "$PENDING_FILE" "$TARGET_FOLDER/$FILENAME"
+            
+            # Update the file with new metadata
+            sed -i "s/uid: .*/uid: $UNIQUE_ID/" "$TARGET_FOLDER/$FILENAME"
+            sed -i "s/slug: .*/slug: \"$SLUG\"/" "$TARGET_FOLDER/$FILENAME"
+            sed -i "s/hugo_destination: .*/hugo_destination: \"$HUGO_DESTINATION\"/" "$TARGET_FOLDER/$FILENAME"
+            sed -i "s/submission_status: .*/submission_status: \"processed\"/" "$TARGET_FOLDER/$FILENAME"
+            
+            echo "✅ Content moved from pending to final location"
           else
-            echo "is_page: false" >> "$TARGET_FOLDER/$FILENAME"
-          fi
-          
-          echo "canonical_url: \"\"" >> "$TARGET_FOLDER/$FILENAME"
-          echo "description: \"$CONTENT_SUMMARY\"" >> "$TARGET_FOLDER/$FILENAME"
-          echo "image: \"\"" >> "$TARGET_FOLDER/$FILENAME"
-          echo "lang: \"vi\"" >> "$TARGET_FOLDER/$FILENAME"
-          echo "class_name: \"\"" >> "$TARGET_FOLDER/$FILENAME"
-          echo "first_published_at: \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"" >> "$TARGET_FOLDER/$FILENAME"
-          echo "hugo_destination: \"$HUGO_DESTINATION\"" >> "$TARGET_FOLDER/$FILENAME"
-          echo "---" >> "$TARGET_FOLDER/$FILENAME"
-          echo "" >> "$TARGET_FOLDER/$FILENAME"
-          
-          # Add content based on test mode
-          if [ "$TEST_MODE" = "true" ]; then
-            echo "# Test Content: $CONTENT_TITLE" >> "$TARGET_FOLDER/$FILENAME"
-            echo "" >> "$TARGET_FOLDER/$FILENAME"
-            echo "## Summary" >> "$TARGET_FOLDER/$FILENAME"
-            echo "$CONTENT_SUMMARY" >> "$TARGET_FOLDER/$FILENAME"
-            echo "" >> "$TARGET_FOLDER/$FILENAME"
-            echo "## Content" >> "$TARGET_FOLDER/$FILENAME"
-            echo "This is test content generated by GitHub Actions workflow." >> "$TARGET_FOLDER/$FILENAME"
-            echo "" >> "$TARGET_FOLDER/$FILENAME"
-            echo "## Generated Info" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- **Type**: $CONTENT_TYPE" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- **Target Folder**: $TARGET_FOLDER" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- **Hugo Destination**: $HUGO_DESTINATION" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- **Generated At**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- **Branch**: ${{ steps.branch-name.outputs.branch_name }}" >> "$TARGET_FOLDER/$FILENAME"
-            echo "" >> "$TARGET_FOLDER/$FILENAME"
-            echo "## Test Markdown Features" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- **Bold text**" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- *Italic text*" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- \`Inline code\`" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- [Link](https://example.com)" >> "$TARGET_FOLDER/$FILENAME"
-            echo "" >> "$TARGET_FOLDER/$FILENAME"
-            echo "\`\`\`python" >> "$TARGET_FOLDER/$FILENAME"
-            echo "# Code block example" >> "$TARGET_FOLDER/$FILENAME"
-            echo "print('Hello, World!')" >> "$TARGET_FOLDER/$FILENAME"
-            echo "\`\`\`" >> "$TARGET_FOLDER/$FILENAME"
-            echo "" >> "$TARGET_FOLDER/$FILENAME"
+            # Create new content file (for manual workflow dispatch)
+            echo "📝 Creating new content file..."
+            
+            # Create YAML front matter
+            echo "---" > "$TARGET_FOLDER/$FILENAME"
+            echo "uid: $UNIQUE_ID" >> "$TARGET_FOLDER/$FILENAME"
+            echo "title: \"$CONTENT_TITLE\"" >> "$TARGET_FOLDER/$FILENAME"
+            echo "slug: \"$SLUG\"" >> "$TARGET_FOLDER/$FILENAME"
+            echo "alias: \"\"" >> "$TARGET_FOLDER/$FILENAME"
+            echo "published_date: \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"" >> "$TARGET_FOLDER/$FILENAME"
+            echo "tags: \"\"" >> "$TARGET_FOLDER/$FILENAME"
+            echo "draft: true" >> "$TARGET_FOLDER/$FILENAME"
+            echo "discoverable: true" >> "$TARGET_FOLDER/$FILENAME"
+            
+            # Set is_page based on content type
+            if [ "$CONTENT_TYPE" = "pages" ]; then
+              echo "is_page: true" >> "$TARGET_FOLDER/$FILENAME"
+            else
+              echo "is_page: false" >> "$TARGET_FOLDER/$FILENAME"
+            fi
+            
+            echo "canonical_url: \"\"" >> "$TARGET_FOLDER/$FILENAME"
+            echo "description: \"$CONTENT_SUMMARY\"" >> "$TARGET_FOLDER/$FILENAME"
+            echo "image: \"\"" >> "$TARGET_FOLDER/$FILENAME"
+            echo "lang: \"vi\"" >> "$TARGET_FOLDER/$FILENAME"
+            echo "class_name: \"\"" >> "$TARGET_FOLDER/$FILENAME"
+            echo "first_published_at: \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"" >> "$TARGET_FOLDER/$FILENAME"
+            echo "hugo_destination: \"$HUGO_DESTINATION\"" >> "$TARGET_FOLDER/$FILENAME"
             echo "---" >> "$TARGET_FOLDER/$FILENAME"
-            echo "*This content was automatically generated for testing purposes.*" >> "$TARGET_FOLDER/$FILENAME"
-          else
-            echo "# $CONTENT_TITLE" >> "$TARGET_FOLDER/$FILENAME"
             echo "" >> "$TARGET_FOLDER/$FILENAME"
-            echo "## Summary" >> "$TARGET_FOLDER/$FILENAME"
-            echo "$CONTENT_SUMMARY" >> "$TARGET_FOLDER/$FILENAME"
-            echo "" >> "$TARGET_FOLDER/$FILENAME"
-            echo "## Content" >> "$TARGET_FOLDER/$FILENAME"
-            echo "Content will be added here by the user." >> "$TARGET_FOLDER/$FILENAME"
-            echo "" >> "$TARGET_FOLDER/$FILENAME"
-            echo "## Metadata" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- **Type**: $CONTENT_TYPE" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- **Target Folder**: $TARGET_FOLDER" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- **Hugo Destination**: $HUGO_DESTINATION" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- **Generated At**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> "$TARGET_FOLDER/$FILENAME"
-            echo "- **Branch**: ${{ steps.branch-name.outputs.branch_name }}" >> "$TARGET_FOLDER/$FILENAME"
-            echo "" >> "$TARGET_FOLDER/$FILENAME"
-            echo "---" >> "$TARGET_FOLDER/$FILENAME"
-            echo "*This is a content template. Please add your content above.*" >> "$TARGET_FOLDER/$FILENAME"
+            
+            # Add content based on test mode
+            if [ "$TEST_MODE" = "true" ]; then
+              echo "# Test Content: $CONTENT_TITLE" >> "$TARGET_FOLDER/$FILENAME"
+              echo "" >> "$TARGET_FOLDER/$FILENAME"
+              echo "## Summary" >> "$TARGET_FOLDER/$FILENAME"
+              echo "$CONTENT_SUMMARY" >> "$TARGET_FOLDER/$FILENAME"
+              echo "" >> "$TARGET_FOLDER/$FILENAME"
+              echo "## Content" >> "$TARGET_FOLDER/$FILENAME"
+              echo "This is test content generated by GitHub Actions workflow." >> "$TARGET_FOLDER/$FILENAME"
+              echo "" >> "$TARGET_FOLDER/$FILENAME"
+              echo "## Generated Info" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- **Type**: $CONTENT_TYPE" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- **Target Folder**: $TARGET_FOLDER" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- **Hugo Destination**: $HUGO_DESTINATION" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- **Generated At**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- **Branch**: ${{ steps.branch-name.outputs.branch_name }}" >> "$TARGET_FOLDER/$FILENAME"
+              echo "" >> "$TARGET_FOLDER/$FILENAME"
+              echo "## Test Markdown Features" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- **Bold text**" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- *Italic text*" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- \`Inline code\`" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- [Link](https://example.com)" >> "$TARGET_FOLDER/$FILENAME"
+              echo "" >> "$TARGET_FOLDER/$FILENAME"
+              echo "\`\`\`python" >> "$TARGET_FOLDER/$FILENAME"
+              echo "# Code block example" >> "$TARGET_FOLDER/$FILENAME"
+              echo "print('Hello, World!')" >> "$TARGET_FOLDER/$FILENAME"
+              echo "\`\`\`" >> "$TARGET_FOLDER/$FILENAME"
+              echo "" >> "$TARGET_FOLDER/$FILENAME"
+              echo "---" >> "$TARGET_FOLDER/$FILENAME"
+              echo "*This content was automatically generated for testing purposes.*" >> "$TARGET_FOLDER/$FILENAME"
+            else
+              echo "# $CONTENT_TITLE" >> "$TARGET_FOLDER/$FILENAME"
+              echo "" >> "$TARGET_FOLDER/$FILENAME"
+              echo "## Summary" >> "$TARGET_FOLDER/$FILENAME"
+              echo "$CONTENT_SUMMARY" >> "$TARGET_FOLDER/$FILENAME"
+              echo "" >> "$TARGET_FOLDER/$FILENAME"
+              echo "## Content" >> "$TARGET_FOLDER/$FILENAME"
+              echo "Content will be added here by the user." >> "$TARGET_FOLDER/$FILENAME"
+              echo "" >> "$TARGET_FOLDER/$FILENAME"
+              echo "## Metadata" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- **Type**: $CONTENT_TYPE" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- **Target Folder**: $TARGET_FOLDER" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- **Hugo Destination**: $HUGO_DESTINATION" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- **Generated At**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> "$TARGET_FOLDER/$FILENAME"
+              echo "- **Branch**: ${{ steps.branch-name.outputs.branch_name }}" >> "$TARGET_FOLDER/$FILENAME"
+              echo "" >> "$TARGET_FOLDER/$FILENAME"
+              echo "---" >> "$TARGET_FOLDER/$FILENAME"
+              echo "*This is a content template. Please add your content above.*" >> "$TARGET_FOLDER/$FILENAME"
+            fi
           fi
           
           echo "Created content file: $TARGET_FOLDER/$FILENAME"
@@ -198,6 +261,14 @@ jobs:
           echo "content_type=$CONTENT_TYPE" >> $GITHUB_OUTPUT
           echo "target_folder=$TARGET_FOLDER" >> $GITHUB_OUTPUT
           echo "hugo_destination=$HUGO_DESTINATION" >> $GITHUB_OUTPUT
+          
+          # Clean up pending content if it was processed
+          if [ "${{ steps.check-pending.outputs.has_pending }}" = "true" ]; then
+            echo "🧹 Cleaning up pending content..."
+            git rm -r pending-content/ || echo "No pending content to remove"
+            git commit -m "Cleanup processed pending content" || echo "No changes to commit"
+            echo "✅ Pending content cleaned up"
+          fi
 
       - name: Commit and push changes
         run: |
