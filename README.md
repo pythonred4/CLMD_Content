@@ -1,10 +1,17 @@
 # 📝 Hệ Thống Gửi Nội Dung - Content Submission Hub
 
-**Lưu ý quan trọng**: Repository này là một **Content Submission Hub** (Trung tâm gửi nội dung), không phải là Hugo static website. Nó có nhiệm vụ:
+**Lưu ý quan trọng**: Repository này là một **Content Submission Hub** (Trung tâm gửi nội dung) hoạt động hoàn toàn qua **GitHub Pages** tại `https://pythonred4.github.io/CLMD_Content/`. Người dùng không cần clone repository hay download gì cả - chỉ cần truy cập website và sử dụng form gửi nội dung.
 
-1. **Thu thập nội dung** từ người dùng qua form
-2. **Tạo Pull Request** tự động cho việc review
-3. **Khi merge content** → trigger workflow để sync với **private Hugo repository**
+## 🌐 **Website Chính**
+
+**URL**: https://pythonred4.github.io/CLMD_Content/
+
+**Tính năng**: 
+- ✅ **Hoạt động hoàn toàn qua web** - không cần clone repo
+- ✅ **Form gửi nội dung** trực tiếp trên website
+- ✅ **Xử lý tự động** qua GitHub Actions
+- ✅ **Tạo Pull Request** tự động cho admin review
+- ✅ **Sync với Hugo repo** khi content được merge
 
 ## 🏗️ Kiến Trúc Hệ Thống
 
@@ -12,12 +19,13 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                    USER INTERFACE                          │
 │  ┌─────────────────────────────────────────────────────┐   │
+│  │        https://pythonred4.github.io/CLMD_Content/   │   │
 │  │              submit-form.html                       │   │
-│  │           (GitHub Pages Form)                      │   │
+│  │           (GitHub Pages Website)                   │   │
 │  └─────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
                               │
-                              ▼
+                              ▼ (Web Form Submission)
 ┌─────────────────────────────────────────────────────────────┐
 │              CONTENT SUBMISSION HUB                        │
 │  ┌─────────────────────────────────────────────────────┐   │
@@ -54,8 +62,10 @@
 
 ## 🚀 Tính Năng Chính
 
-- ✅ **Form Gửi Nội Dung**: Giao diện tiếng Việt, dễ sử dụng
-- ✅ **Hỗ Trợ Markdown**: Viết nội dung với Markdown
+- ✅ **Website hoàn chỉnh**: Hoạt động tại https://pythonred4.github.io/CLMD_Content/
+- ✅ **Không cần clone repo**: Người dùng chỉ cần truy cập website
+- ✅ **Form gửi nội dung**: Giao diện tiếng Việt, dễ sử dụng
+- ✅ **Hỗ trợ Markdown**: Viết nội dung với Markdown
 - ✅ **YAML Header Tự Động**: Header được tạo tự động từ nội dung
 - ✅ **Phân Loại Tự Động**: File được đặt đúng thư mục dựa trên loại nội dung
 - ✅ **Tạo Pull Request**: Tự động tạo PR trên GitHub cho review
@@ -63,36 +73,37 @@
 - ✅ **Không Cần Tài Khoản**: Gửi nội dung ẩn danh
 - ✅ **Tự Động Sync**: Khi merge → tự động sync với Hugo repo
 
-## 📁 Cấu Trúc Thư Mục
+## 📝 Cách Sử Dụng (Cho Người Dùng)
 
-```
-├── submit-form.html          # Form gửi nội dung chính
-├── form-handler.js          # JavaScript xử lý form
-├── config.js                # File cấu hình hệ thống
-├── demo.html                # Trang demo và test
-├── pages/
-│   └── submit-content.md     # Hướng dẫn sử dụng
-├── Video-Single/             # Nội dung video đơn lẻ (tạm thời)
-├── Post-Single/              # Bài viết đơn lẻ (tạm thời)
-├── posts/                    # Tập hợp bài viết (tạm thời)
-├── pages/                    # Trang tĩnh (tạm thời)
-├── .github/
-│   ├── workflows/
-│   │   ├── process-content-submissions.yml  # Xử lý nội dung gửi lên
-│   │   └── dispatch-update.yml              # Gửi signal đến Hugo repo
-│   └── scripts/
-│       └── process_submission.py            # Script xử lý Python
-└── README.md                 # File này
-```
+### **Bước 1: Truy Cập Website**
+- Mở trình duyệt web
+- Truy cập: **https://pythonred4.github.io/CLMD_Content/**
+- Không cần clone repository hay download gì cả
+
+### **Bước 2: Sử Dụng Form Gửi Nội Dung**
+- Tìm và mở form gửi nội dung trên website
+- Hoặc truy cập trực tiếp: **https://pythonred4.github.io/CLMD_Content/submit-form.html**
+
+### **Bước 3: Điền Thông Tin**
+- Chọn loại nội dung (Video-Single/Post-Single/Posts/Pages)
+- Viết tóm tắt (tùy chọn)
+- Viết nội dung với Markdown
+- Sử dụng nút "Xem Trước" để kiểm tra
+
+### **Bước 4: Gửi Nội Dung**
+- Nhấn "Gửi Nội Dung"
+- Hệ thống sẽ tự động xử lý và tạo Pull Request
+- Admin sẽ review và merge nội dung
+- Nội dung sẽ được sync với Hugo website
 
 ## 🔄 Quy Trình Hoạt Động
 
-### 1. **Gửi Nội Dung** (User → This Repo)
-1. Người dùng mở `submit-form.html`
-2. Chọn loại nội dung và viết nội dung
-3. Gửi form → trigger GitHub Actions workflow
+### 1. **Gửi Nội Dung** (User → Website)
+1. Người dùng truy cập https://pythonred4.github.io/CLMD_Content/
+2. Mở form gửi nội dung
+3. Điền và gửi nội dung → trigger GitHub Actions workflow
 
-### 2. **Xử Lý Nội Dung** (This Repo)
+### 2. **Xử Lý Nội Dung** (Website → This Repo)
 1. `process-content-submissions.yml` được kích hoạt
 2. Python script xử lý và validate nội dung
 3. Tạo file Markdown với YAML header
@@ -113,7 +124,7 @@
 2. Hugo site được rebuild
 3. Website được deploy với nội dung mới
 
-## 🔧 Cài Đặt & Cấu Hình
+## 🔧 Cài Đặt & Cấu Hình (Cho Admin/Developer)
 
 ### 1. Yêu Cầu Hệ Thống
 
@@ -172,28 +183,27 @@ jobs:
         # Deploy website
 ```
 
-## 📝 Cách Sử Dụng
+## 📁 Cấu Trúc Thư Mục
 
-### 1. Gửi Nội Dung
-
-1. Mở `submit-form.html` trong trình duyệt
-2. Chọn loại nội dung (Video-Single/Post-Single/Posts/Pages)
-3. Viết tóm tắt (tùy chọn)
-4. Viết nội dung với Markdown
-5. Sử dụng nút "Xem Trước" để kiểm tra
-6. Nhấn "Gửi Nội Dung"
-
-### 2. Quy Trình Xử Lý
-
-1. **Gửi Form**: Người dùng gửi nội dung qua form
-2. **Trigger Workflow**: GitHub Actions workflow được kích hoạt
-3. **Xử Lý Nội Dung**: Script Python xử lý và validate nội dung
-4. **Tạo File**: Tạo file Markdown với YAML header phù hợp
-5. **Tạo Pull Request**: Tự động tạo PR cho admin review
-6. **Xem Xét**: Admin review và phê duyệt nội dung
-7. **Merge**: Merge PR vào main branch
-8. **Sync Signal**: Gửi signal đến Hugo repository
-9. **Content Sync**: Hugo repo sync content và rebuild website
+```
+├── submit-form.html          # Form gửi nội dung chính
+├── form-handler.js          # JavaScript xử lý form
+├── config.js                # File cấu hình hệ thống
+├── demo.html                # Trang demo và test
+├── pages/
+│   └── submit-content.md     # Hướng dẫn sử dụng
+├── Video-Single/             # Nội dung video đơn lẻ (tạm thời)
+├── Post-Single/              # Bài viết đơn lẻ (tạm thời)
+├── posts/                    # Tập hợp bài viết (tạm thời)
+├── pages/                    # Trang tĩnh (tạm thời)
+├── .github/
+│   ├── workflows/
+│   │   ├── process-content-submissions.yml  # Xử lý nội dung gửi lên
+│   │   └── dispatch-update.yml              # Gửi signal đến Hugo repo
+│   └── scripts/
+│       └── process_submission.py            # Script xử lý Python
+└── README.md                 # File này
+```
 
 ## 🛠️ Tùy Chỉnh
 
@@ -229,12 +239,12 @@ const ContentSubmissionConfig = {
     submissionMethod: 'github-api', // hoặc 'netlify', 'webhook'
     github: {
         owner: 'your-username',
-        repo: 'your-content-hub-repo',  // Repository này
+        repo: 'your-content-hub-repo',  # Repository này
         branch: 'main'
     },
     hugoRepo: {
         owner: 'your-username',
-        repo: 'your-hugo-repo',         // Hugo repository
+        repo: 'your-hugo-repo',         # Hugo repository
         eventType: 'update-content-submodule'
     }
 };
@@ -259,6 +269,13 @@ Sử dụng workflow dispatch với test mode:
 2. Kiểm tra `dispatch-update.yml` workflow
 3. Verify signal được gửi đến Hugo repo
 
+### Test Website
+
+1. Truy cập https://pythonred4.github.io/CLMD_Content/
+2. Mở form gửi nội dung
+3. Test các tính năng của form
+4. Verify Markdown preview hoạt động
+
 ## 🚨 Troubleshooting
 
 ### Lỗi Thường Gặp
@@ -267,6 +284,7 @@ Sử dụng workflow dispatch với test mode:
 2. **Repository Dispatch Failed**: Kiểm tra repository name và event type
 3. **Hugo Repo Not Responding**: Kiểm tra workflow trong Hugo repo
 4. **Content Not Syncing**: Kiểm tra sync workflow trong Hugo repo
+5. **Website Not Loading**: Kiểm tra GitHub Pages settings
 
 ### Debug
 
@@ -274,6 +292,7 @@ Sử dụng workflow dispatch với test mode:
 2. Verify repository dispatch event được gửi
 3. Kiểm tra Hugo repo workflow configuration
 4. Test với test mode trước
+5. Kiểm tra GitHub Pages deployment status
 
 ## 📚 Tài Liệu Tham Khảo
 
@@ -300,10 +319,20 @@ Dự án này được phát hành dưới MIT License.
 
 ## 🔗 Liên Kết Quan Trọng
 
+- **Website Chính**: [https://pythonred4.github.io/CLMD_Content/](https://pythonred4.github.io/CLMD_Content/)
 - **Content Submission Form**: [submit-form.html](submit-form.html)
 - **Demo & Testing**: [demo.html](demo.html)
 - **User Guide**: [pages/submit-content.md](pages/submit-content.md)
 - **Configuration**: [config.js](config.js)
+
+## 🌐 **Cách Sử Dụng Cho Người Dùng Cuối**
+
+1. **Truy cập website**: https://pythonred4.github.io/CLMD_Content/
+2. **Mở form gửi nội dung** từ website
+3. **Điền thông tin** và gửi nội dung
+4. **Chờ xử lý** - hệ thống sẽ tự động tạo PR
+5. **Admin review** và merge nội dung
+6. **Nội dung được sync** với Hugo website
 
 **Lưu ý**: Đây là hệ thống demo. Trong môi trường production, hãy đảm bảo:
 - Bảo mật thông tin người dùng
@@ -311,3 +340,4 @@ Dự án này được phát hành dưới MIT License.
 - Backup và monitoring
 - Error handling đầy đủ
 - Proper repository permissions
+- GitHub Pages hoạt động ổn định

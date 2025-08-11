@@ -19,7 +19,10 @@ const ContentSubmissionConfig = {
         description: "Hệ thống gửi nội dung tự động - Trung tâm thu thập nội dung",
         language: "vi", // vi, en, my, th, other
         timezone: "Asia/Ho_Chi_Minh",
-        type: "content-hub" // content-hub, hugo-website, etc.
+        type: "content-hub", // content-hub, hugo-website, etc.
+        url: "https://pythonred4.github.io/CLMD_Content/",
+        isWebBased: true,
+        requiresClone: false
     },
     
     // ========================================
@@ -31,7 +34,11 @@ const ContentSubmissionConfig = {
         name: "Content Submission Hub",
         purpose: "Collect content from users and create pull requests",
         isHugoWebsite: false,
-        isContentHub: true
+        isContentHub: true,
+        isWebBased: true,
+        websiteUrl: "https://pythonred4.github.io/CLMD_Content/",
+        accessMethod: "web-only", // web-only, clone, both
+        userInstructions: "Truy cập website và sử dụng form - không cần clone repo"
     },
     
     // Private Hugo repository (Actual website)

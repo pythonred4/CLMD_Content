@@ -13,7 +13,13 @@ Chào mừng bạn đến với trang gửi nội dung! Tại đây, bạn có t
 
 ## 🚀 Gửi Nội Dung Ngay
 
+### **🌐 Truy Cập Website Chính**
+**URL**: https://pythonred4.github.io/CLMD_Content/
+
+### **📝 Form Gửi Nội Dung**
 **[👉 Bấm vào đây để mở form gửi nội dung](submit-form.html)**
+
+**Lưu ý**: Bạn có thể truy cập form trực tiếp từ website chính hoặc sử dụng link trực tiếp. Không cần clone repository hay download gì cả!
 
 ## 📋 Các Loại Nội Dung Được Chấp Nhận
 
@@ -102,6 +108,17 @@ Chào mừng bạn đến với trang gửi nội dung! Tại đây, bạn có t
 6. **Merge**: Merge PR vào main branch → trigger sync workflow
 7. **Sync Hugo**: Gửi signal đến private Hugo repository để sync content
 8. **Xuất Bản**: Nội dung được hiển thị trên website Hugo sau khi sync
+
+## 🌐 Cách Truy Cập Hệ Thống
+
+### **Bước 1: Truy Cập Website**
+- Mở trình duyệt web
+- Truy cập: **https://pythonred4.github.io/CLMD_Content/**
+- Không cần clone repository hay download gì cả
+
+### **Bước 2: Mở Form Gửi Nội Dung**
+- Tìm và mở form gửi nội dung trên website
+- Hoặc truy cập trực tiếp: **submit-form.html**
 
 ## 📝 Hướng Dẫn Sử Dụng
 
