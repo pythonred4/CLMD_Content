@@ -177,11 +177,35 @@ class ContentProcessor:
         return sanitized
 
     def create_content_file(self, submission):
-        """Create the content file with proper front matter"""
-        # Create filename
-        date_str = datetime.now().strftime("%Y%m%d")
-        title_slug = self.sanitize_filename(submission['title'].lower())
-        filename = f"{date_str}-{title_slug}.md"
+        """Create the content file with proper front matter matching existing structure"""
+        # Generate a unique ID (similar to existing files)
+        import random
+        import string
+        
+        # Create a random ID like the existing files
+        uid = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+        
+        # Extract title from content if available
+        title = submission.get('title', '')
+        if not title:
+            content_lines = submission.get('content', '').split('\n')
+            for line in content_lines:
+                if line.startswith('# '):
+                    title = line[2:].strip()
+                    break
+            if not title:
+                title = f"Content Submission - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+        
+        # Generate slug from title (similar to existing files)
+        slug = self.sanitize_filename(title.lower())
+        # Ensure slug is not too long and is unique
+        if len(slug) > 50:
+            slug = slug[:50]
+        # Add random suffix to ensure uniqueness
+        slug = f"{slug}-{uid[:4]}"
+        
+        # Create filename using the slug
+        filename = f"{slug}.md"
         
         # Parse tags from summary if available
         tags = []
@@ -190,23 +214,24 @@ class ContentProcessor:
             summary_words = submission['summary'].split()
             tags = [word.strip('.,!?') for word in summary_words if len(word) > 3][:5]  # Limit to 5 tags
         
-        # Create front matter
+        # Create front matter matching existing structure
         front_matter = {
-            'title': submission['title'],
-            'date': submission['submitted_at'],
+            'uid': uid,
+            'title': title,
+            'slug': slug,
+            'alias': '',
+            'published_date': submission.get('submitted_at', datetime.now().isoformat()),
+            'tags': ', '.join(tags) if tags else '',
             'draft': True,  # Always start as draft for review
-            'type': submission['content_type'],
-            'language': submission['language'],
-            'rating': submission['content_rating'],
-            'submission_id': submission['id'],
-            'submitted_at': submission['submitted_at'],
-            'author': 'Anonymous Contributor',
-            'tags': tags
+            'discoverable': True,
+            'is_page': submission.get('content_type') == 'pages',
+            'canonical_url': '',
+            'description': submission.get('summary', ''),
+            'image': '',
+            'lang': submission.get('language', 'vi'),
+            'class_name': '',
+            'first_published_at': submission.get('submitted_at', datetime.now().isoformat())
         }
-        
-        # Add summary if available
-        if submission.get('summary'):
-            front_matter['summary'] = submission['summary']
         
         # Convert front matter to YAML
         yaml_content = yaml.dump(front_matter, default_flow_style=False, allow_unicode=True, sort_keys=False)
@@ -217,15 +242,24 @@ class ContentProcessor:
         return filename, full_content
 
     def determine_target_path(self, submission):
-        """Determine the target path for the content file"""
-        language = self.language_mappings.get(submission['language'], 'other')
-        content_type = self.content_type_mappings.get(submission['content_type'], 'misc')
+        """Determine the target path for the content file based on content type"""
+        content_type = submission.get('content_type', 'post-single')
         
-        # Create directory structure
-        target_dir = f"content/{language}/{content_type}"
-        Path(target_dir).mkdir(parents=True, exist_ok=True)
+        # Map content types to existing folder structures
+        folder_mapping = {
+            'video-single': 'Video-Single',
+            'post-single': 'Post-Single',
+            'posts': 'posts',
+            'pages': 'pages'
+        }
         
-        return target_dir
+        # Get the target folder
+        target_folder = folder_mapping.get(content_type, 'posts')
+        
+        # Create the full path
+        target_path = f"{target_folder}"
+        
+        return target_path
 
     def process_submission(self):
         """Main processing function"""
@@ -234,53 +268,82 @@ class ContentProcessor:
         # Get the latest submission
         submission = self.get_latest_submission()
         if not submission:
-            print("❌ No submission to process")
+            print("❌ No submission found to process")
             return False
         
-        print(f"📝 Processing submission: {submission['title']}")
+        print(f"📝 Processing submission: {submission.get('id', 'unknown')}")
         
-        # Validate submission
-        errors = self.validate_submission(submission)
-        if errors:
-            print("❌ Validation errors:")
-            for error in errors:
-                print(f"   - {error}")
+        # Validate the submission
+        validation_errors = self.validate_submission(submission)
+        if validation_errors:
+            print(f"❌ Validation failed: {validation_errors}")
             return False
         
         print("✅ Submission validation passed")
         
-        # Create content file
-        filename, file_content = self.create_content_file(submission)
-        target_dir = self.determine_target_path(submission)
-        target_path = f"{target_dir}/{filename}"
+        # Create the content file
+        filename, content = self.create_content_file(submission)
+        target_path = self.determine_target_path(submission)
         
-        # Write file to repository
-        full_path = Path(target_path)
-        full_path.parent.mkdir(parents=True, exist_ok=True)
+        # Ensure the target directory exists
+        full_target_dir = Path(target_path)
+        full_target_dir.mkdir(parents=True, exist_ok=True)
         
-        with open(full_path, 'w', encoding='utf-8') as f:
-            f.write(file_content)
+        # Write the content file
+        file_path = full_target_dir / filename
+        try:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            print(f"✅ Content file created: {file_path}")
+        except Exception as e:
+            print(f"❌ Error writing file: {e}")
+            return False
         
-        print(f"✅ Content file created: {target_path}")
+        # Set GitHub Actions outputs for the workflow
+        print("📤 Setting GitHub Actions outputs...")
         
-        # Set output variables for GitHub Actions
+        # Extract title from content if not set
+        title = submission.get('title', '')
+        if not title:
+            content_lines = submission.get('content', '').split('\n')
+            for line in content_lines:
+                if line.startswith('# '):
+                    title = line[2:].strip()
+                    break
+            if not title:
+                title = f"Content Submission - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+        
+        # Set outputs for GitHub Actions
         print(f"::set-output name=has_changes::true")
-        print(f"::set-output name=submission_id::{submission['id']}")
-        print(f"::set-output name=submission_title::{submission['title']}")
-        print(f"::set-output name=content_type::{submission['content_type']}")
-        print(f"::set-output name=language::{submission['language']}")
-        print(f"::set-output name=rating::{submission['content_rating']}")
-        print(f"::set-output name=tags::{', '.join([tag.strip() for tag in submission.get('tags', '').split(',') if tag.strip()])}")
-        print(f"::set-output name=target_path::{target_path}")
+        print(f"::set-output name=submission_id::{submission.get('id', 'unknown')}")
+        print(f"::set-output name=submission_title::{title}")
+        print(f"::set-output name=content_type::{submission.get('content_type', 'unknown')}")
+        print(f"::set-output name=language::{submission.get('language', 'vi')}")
+        print(f"::set_output name=rating::{submission.get('content_rating', 'G')}")
+        print(f"::set-output name=target_path::{file_path}")
         print(f"::set-output name=processed_at::{datetime.now().isoformat()}")
-        print(f"::set-output name=submitted_at::{submission['submitted_at']}")
-        print(f"::set-output name=content_length::{len(submission['content'])}")
+        print(f"::set-output name=submitted_at::{submission.get('submitted_at', 'unknown')}")
+        print(f"::set-output name=content_length::{len(submission.get('content', ''))}")
+        
+        # Create tags from summary
+        tags = []
+        if submission.get('summary'):
+            summary_words = submission['summary'].split()
+            tags = [word.strip('.,!?') for word in summary_words if len(word) > 3][:5]
+        
+        print(f"::set-output name=tags::{', '.join(tags) if tags else 'none'}")
         
         # Create content preview (first 200 characters)
-        content_preview = submission['content'][:200] + "..." if len(submission['content']) > 200 else submission['content']
+        content_preview = submission.get('content', '')[:200]
+        if len(submission.get('content', '')) > 200:
+            content_preview += "..."
         print(f"::set-output name=content_preview::{content_preview}")
         
-        print("🎉 Content submission processing completed successfully!")
+        print("✅ Content submission processed successfully!")
+        print(f"📁 File created: {file_path}")
+        print(f"📝 Title: {title}")
+        print(f"🏷️ Type: {submission.get('content_type', 'unknown')}")
+        
         return True
 
 def main():
