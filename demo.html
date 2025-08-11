@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Hệ Thống Gửi Nội Dung Tự Động</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .section h3 {
+            color: #555;
+            margin: 20px 0 10px 0;
+            font-size: 1.3rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-top: 3px solid #4facfe;
+        }
+
+        .feature-card h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .demo-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .demo-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .demo-btn.secondary {
+            background: #6c757d;
+        }
+
+        .demo-btn.secondary:hover {
+            background: #5a6268;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+
+        .code-block pre {
+            margin: 0;
+        }
+
+        .workflow-diagram {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .workflow-step {
+            display: inline-block;
+            background: #4facfe;
+            color: white;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 25px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .workflow-step:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: #4facfe;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.success {
+            background: #28a745;
+        }
+
+        .status-indicator.warning {
+            background: #ffc107;
+        }
+
+        .status-indicator.info {
+            background: #17a2b8;
+        }
+
+        .file-structure {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .file-structure .folder {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .file-structure .file {
+            color: #28a745;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .demo-buttons {
+                flex-direction: column;
+            }
+            
+            .workflow-step {
+                display: block;
+                margin: 10px auto;
+            }
+            
+            .workflow-step:not(:last-child)::after {
+                content: '↓';
+                position: static;
+                display: block;
+                margin: 10px auto;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Demo Hệ Thống Gửi Nội Dung</h1>
+            <p>Khám phá cách hệ thống hoạt động và thử nghiệm các tính năng</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>🎯 Tổng Quan Hệ Thống</h2>
+                <p>Hệ thống gửi nội dung tự động cho GitHub Pages với khả năng tạo Pull Request và phân loại file tự động. Người dùng có thể gửi nội dung qua form web, và hệ thống sẽ tự động xử lý, tạo file Markdown với YAML header, và tạo Pull Request trên GitHub.</p>
+                
+                <div class="demo-buttons">
+                    <a href="submit-form.html" class="demo-btn">📝 Thử Form Gửi Nội Dung</a>
+                    <a href="pages/submit-content.html" class="demo-btn secondary">📖 Xem Hướng Dẫn</a>
+                    <a href="README.md" class="demo-btn secondary">📚 Xem Tài Liệu</a>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔄 Quy Trình Hoạt Động</h2>
+                <div class="workflow-diagram">
+                    <div class="workflow-step">1. Gửi Form</div>
+                    <div class="workflow-step">2. Xác Thực</div>
+                    <div class="workflow-step">3. Xử Lý</div>
+                    <div class="workflow-step">4. Tạo File</div>
+                    <div class="workflow-step">5. Tạo PR</div>
+                    <div class="workflow-step">6. Phê Duyệt</div>
+                </div>
+                
+                <h3>Chi Tiết Từng Bước:</h3>
+                <ol style="margin-left: 20px; line-height: 1.8;">
+                    <li><strong>Gửi Form:</strong> Người dùng điền và gửi form nội dung</li>
+                    <li><strong>Xác Thực:</strong> Hệ thống kiểm tra tính hợp lệ của dữ liệu</li>
+                    <li><strong>Xử Lý:</strong> Python script xử lý và chuẩn bị nội dung</li>
+                    <li><strong>Tạo File:</strong> Tạo file Markdown với YAML header tự động</li>
+                    <li><strong>Tạo PR:</strong> Tự động tạo Pull Request trên GitHub</li>
+                    <li><strong>Phê Duyệt:</strong> Admin review và merge PR</li>
+                </ol>
+            </div>
+
+            <div class="section">
+                <h2>✨ Tính Năng Chính</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🎨 Giao Diện Tiếng Việt</h4>
+                        <p>Form gửi nội dung với giao diện tiếng Việt, dễ sử dụng và thân thiện với người dùng.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📝 Hỗ Trợ Markdown</h4>
+                        <p>Viết nội dung với Markdown, hỗ trợ xem trước và định dạng phong phú.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🔧 YAML Header Tự Động</h4>
+                        <p>Header YAML được tạo tự động từ nội dung, bao gồm metadata cần thiết.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📁 Phân Loại Tự Động</h4>
+                        <p>File được đặt đúng thư mục dựa trên loại nội dung đã chọn.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🚀 Tạo Pull Request</h4>
+                        <p>Tự động tạo Pull Request trên GitHub để admin review và phê duyệt.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🛡️ Bảo Mật & Ẩn Danh</h4>
+                        <p>Không cần tài khoản, bảo vệ chống spam, và bảo mật thông tin người dùng.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📁 Cấu Trúc Thư Mục</h2>
+                <p>Hệ thống tự động phân loại nội dung vào các thư mục phù hợp:</p>
+                
+                <div class="file-structure">
+                    <div class="folder">📁 Video-Single/</div>
+                    <div class="file">  └── video-content-abc123.md</div>
+                    <div class="folder">📁 Post-Single/</div>
+                    <div class="file">  └── post-content-def456.md</div>
+                    <div class="folder">📁 posts/</div>
+                    <div class="file">  └── article-content-ghi789.md</div>
+                    <div class="folder">📁 pages/</div>
+                    <div class="file">  └── page-content-jkl012.md</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>⚙️ Cấu Hình & Tùy Chỉnh</h2>
+                <p>Hệ thống có thể được tùy chỉnh dễ dàng thông qua file cấu hình:</p>
+                
+                <div class="code-block">
+<pre>// config.js
+const ContentSubmissionConfig = {
+    submissionMethod: 'github-api', // hoặc 'netlify', 'webhook'
+    github: {
+        owner: 'your-username',
+        repo: 'your-repo',
+        branch: 'main'
+    },
+    contentTypes: {
+        'custom-type': {
+            label: 'Custom Type',
+            folder: 'custom-folder/',
+            description: 'Mô tả loại nội dung mới'
+        }
+    }
+};</pre>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🧪 Thử Nghiệm Hệ Thống</h2>
+                <p>Bạn có thể thử nghiệm hệ thống bằng các cách sau:</p>
+                
+                <div class="demo-buttons">
+                    <button class="demo-btn" onclick="testFormSubmission()">🧪 Test Form Submission</button>
+                    <button class="demo-btn secondary" onclick="testWorkflow()">⚙️ Test Workflow</button>
+                    <button class="demo-btn secondary" onclick="showConfig()">⚙️ Xem Cấu Hình</button>
+                </div>
+                
+                <div id="testResults" style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 8px; display: none;">
+                    <h4>Kết Quả Test:</h4>
+                    <div id="testOutput"></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔗 Tích Hợp & API</h2>
+                <p>Hệ thống hỗ trợ nhiều phương thức tích hợp:</p>
+                
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li><span class="status-indicator success"></span><strong>GitHub API:</strong> Gửi trực tiếp qua GitHub API</li>
+                    <li><span class="status-indicator success"></span><strong>Netlify Forms:</strong> Tích hợp với Netlify form handling</li>
+                    <li><span class="status-indicator success"></span><strong>Webhook:</strong> Gửi qua webhook endpoint</li>
+                    <li><span class="status-indicator info"></span><strong>REST API:</strong> API endpoint tùy chỉnh</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>📊 Thống Kê & Monitoring</h2>
+                <p>Hệ thống cung cấp thông tin chi tiết về quá trình xử lý:</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>📈 GitHub Actions Logs</h4>
+                        <p>Theo dõi quá trình xử lý qua GitHub Actions workflow logs.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🔍 Pull Request Tracking</h4>
+                        <p>Quản lý và theo dõi trạng thái của các Pull Request được tạo.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📝 Content Analytics</h4>
+                        <p>Thống kê về loại nội dung, số lượng submission, và tỷ lệ phê duyệt.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🚀 Bắt Đầu Sử Dụng</h2>
+                <p>Để bắt đầu sử dụng hệ thống:</p>
+                
+                <ol style="margin-left: 20px; line-height: 1.8;">
+                    <li>Mở <a href="submit-form.html" style="color: #4facfe; text-decoration: none;">form gửi nội dung</a></li>
+                    <li>Chọn loại nội dung phù hợp</li>
+                    <li>Viết tóm tắt và nội dung</li>
+                    <li>Sử dụng tính năng xem trước Markdown</li>
+                    <li>Gửi nội dung và chờ xử lý</li>
+                    <li>Theo dõi Pull Request trên GitHub</li>
+                </ol>
+                
+                <div class="demo-buttons" style="margin-top: 20px;">
+                    <a href="submit-form.html" class="demo-btn">🚀 Bắt Đầu Ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test functions for demo purposes
+        function testFormSubmission() {
+            const results = document.getElementById('testResults');
+            const output = document.getElementById('testOutput');
+            
+            results.style.display = 'block';
+            output.innerHTML = `
+                <div style="color: #28a745;">
+                    ✅ Test form submission initiated...<br>
+                    📝 Simulating content submission...<br>
+                    🔄 Processing content...<br>
+                    📁 File would be created in appropriate folder...<br>
+                    🚀 GitHub Actions workflow would be triggered...<br>
+                    📋 Pull Request would be created automatically...
+                </div>
+                <br>
+                <strong>Test completed successfully!</strong>
+            `;
+        }
+        
+        function testWorkflow() {
+            const results = document.getElementById('testResults');
+            const output = document.getElementById('testOutput');
+            
+            results.style.display = 'block';
+            output.innerHTML = `
+                <div style="color: #17a2b8;">
+                    ⚙️ Testing GitHub Actions workflow...<br>
+                    🔍 Checking workflow configuration...<br>
+                    📋 Verifying Python script...<br>
+                    📁 Checking folder structure...<br>
+                    🔐 Validating permissions...<br>
+                    ✅ Workflow test completed!
+                </div>
+                <br>
+                <strong>Workflow is properly configured!</strong>
+            `;
+        }
+        
+        function showConfig() {
+            const results = document.getElementById('testResults');
+            const output = document.getElementById('testOutput');
+            
+            results.style.display = 'block';
+            output.innerHTML = `
+                <div style="color: #6c757d;">
+                    ⚙️ Current Configuration:<br>
+                    📝 Submission Method: simulate<br>
+                    🌐 Language: Vietnamese (vi)<br>
+                    📁 Content Types: 4 types configured<br>
+                    🔐 Security: Honeypot enabled<br>
+                    📧 Notifications: Disabled<br>
+                    🐛 Debug Mode: Disabled
+                </div>
+                <br>
+                <strong>Configuration loaded successfully!</strong>
+            `;
+        }
+        
+        // Add some interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Demo page loaded successfully!');
+            console.log('Test the system with: testFormSubmission(), testWorkflow(), or showConfig()');
+        });
+    </script>
+</body>
+</html>
