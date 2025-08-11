@@ -1,0 +1,249 @@
+name: Process Issue Submissions
+
+on:
+  issues:
+    types: [opened, edited]
+    labels: ["content-submission"]
+
+jobs:
+  process-content:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Process content submission
+        id: process-content
+        run: |
+          echo "📝 Processing content submission from issue..."
+          
+          # Extract issue data
+          ISSUE_TITLE="${{ github.event.issue.title }}"
+          ISSUE_BODY="${{ github.event.issue.body }}"
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          
+          echo "📋 Issue #$ISSUE_NUMBER: $ISSUE_TITLE"
+          
+          # Parse content type from issue body
+          CONTENT_TYPE="post-single"  # default
+          if echo "$ISSUE_BODY" | grep -q "Video-Single"; then
+            CONTENT_TYPE="video-single"
+          elif echo "$ISSUE_BODY" | grep -q "Post-Single"; then
+            CONTENT_TYPE="post-single"
+          elif echo "$ISSUE_BODY" | grep -q "Posts"; then
+            CONTENT_TYPE="posts"
+          elif echo "$ISSUE_BODY" | grep -q "Pages"; then
+            CONTENT_TYPE="pages"
+          fi
+          
+          # Extract title (remove [CONTENT] prefix if present)
+          CONTENT_TITLE=$(echo "$ISSUE_TITLE" | sed 's/^\[CONTENT\] //')
+          
+          # Extract summary from issue body
+          CONTENT_SUMMARY=$(echo "$ISSUE_BODY" | grep -A1 "**Summary:**" | tail -1 | sed 's/^<!-- //; s/ -->$//')
+          if [ "$CONTENT_SUMMARY" = "Brief description of your content" ]; then
+            CONTENT_SUMMARY=""
+          fi
+          
+          # Extract content from issue body
+          CONTENT_BODY=$(echo "$ISSUE_BODY" | sed -n '/**Content:**/,/##/p' | head -n -1 | tail -n +2)
+          
+          # Generate unique ID and slug
+          UNIQUE_ID=$(openssl rand -hex 4)
+          SLUG=$(echo "$CONTENT_TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-\|-$//g')
+          TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          
+          # Determine target folder and Hugo destination
+          case $CONTENT_TYPE in
+            "video-single")
+              TARGET_FOLDER="Video-Single"
+              HUGO_DESTINATION="content/videos/"
+              ;;
+            "post-single")
+              TARGET_FOLDER="Post-Single"
+              HUGO_DESTINATION="content/posts/"
+              ;;
+            "posts")
+              TARGET_FOLDER="posts"
+              HUGO_DESTINATION="content/articles/"
+              ;;
+            "pages")
+              TARGET_FOLDER="pages"
+              HUGO_DESTINATION="content/pages/"
+              ;;
+            *)
+              TARGET_FOLDER="posts"
+              HUGO_DESTINATION="content/articles/"
+              ;;
+          esac
+          
+          # Create target folder
+          mkdir -p "$TARGET_FOLDER"
+          
+          # Create content file
+          FILENAME="${SLUG}-${UNIQUE_ID}.md"
+          FILEPATH="$TARGET_FOLDER/$FILENAME"
+          
+          # Create YAML front matter and content
+          cat > "$FILEPATH" << EOF
+---
+uid: ${UNIQUE_ID}
+title: "${CONTENT_TITLE}"
+slug: "${SLUG}"
+alias: ""
+published_date: "${TIMESTAMP}"
+tags: ""
+draft: true
+discoverable: true
+is_page: $([ "$CONTENT_TYPE" = "pages" ] && echo "true" || echo "false")
+canonical_url: ""
+description: "${CONTENT_SUMMARY}"
+image: ""
+lang: "vi"
+class_name: ""
+first_published_at: "${TIMESTAMP}"
+hugo_destination: "${HUGO_DESTINATION}"
+source: "github-issue"
+issue_number: ${ISSUE_NUMBER}
+submitted_at: "${TIMESTAMP}"
+---
+
+${CONTENT_BODY}
+
+---
+*This content was submitted via GitHub Issue #${ISSUE_NUMBER}*
+EOF
+          
+          echo "📄 Created content file: $FILEPATH"
+          echo "file_path=$FILEPATH" >> $GITHUB_OUTPUT
+          echo "content_type=$CONTENT_TYPE" >> $GITHUB_OUTPUT
+          echo "content_title=$CONTENT_TITLE" >> $GITHUB_OUTPUT
+          echo "target_folder=$TARGET_FOLDER" >> $GITHUB_OUTPUT
+          echo "unique_id=$UNIQUE_ID" >> $GITHUB_OUTPUT
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+          
+      - name: Generate branch name
+        id: branch-name
+        run: |
+          # Get current date and time in dd-mm-yyyy-hh-mm-ss format
+          BRANCH_NAME="updatecontent-$(date +'%d-%m-%Y-%H-%M-%S')"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "Generated branch name: $BRANCH_NAME"
+          
+      - name: Create and switch to new branch
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Create and switch to new branch
+          git checkout -b ${{ steps.branch-name.outputs.branch_name }}
+          
+          echo "Created and switched to branch: ${{ steps.branch-name.outputs.branch_name }}"
+          
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Add content from issue #${{ github.event.issue.number }}: ${{ steps.process-content.outputs.content_title }} (${{ steps.process-content.outputs.content_type }})"
+          git push origin ${{ steps.branch-name.outputs.branch_name }}
+          
+          echo "Pushed changes to branch: ${{ steps.branch-name.outputs.branch_name }}"
+          
+      - name: Create Pull Request
+        id: create-pr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.branch-name.outputs.branch_name }}
+          title: "Content Update: ${{ steps.process-content.outputs.content_title }}"
+          body: |
+            ## 📝 Content Update from Issue
+            
+            **Issue:** #${{ github.event.issue.number }}
+            **Content Type:** ${{ steps.process-content.outputs.content_type }}
+            **Title:** ${{ steps.process-content.outputs.content_title }}
+            **Summary:** ${{ steps.process-content.outputs.content_summary || 'No summary provided' }}
+            **Target Folder:** ${{ steps.process-content.outputs.target_folder }}
+            **Hugo Destination:** ${{ steps.process-content.outputs.hugo_destination }}
+            
+            ## 📁 Files Added
+            
+            - **${{ steps.process-content.outputs.file_path }}**
+            
+            ## 🔄 Next Steps
+            
+            1. **Review the content** in the file above
+            2. **Edit if needed** - you can modify the content directly in this PR
+            3. **Test the content** to ensure it's correct
+            4. **Approve and merge** when ready
+            
+            ## 📋 Content Information
+            
+            - **Generated At:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+            - **Branch:** ${{ steps.branch-name.outputs.branch_name }}
+            - **Workflow:** ${{ github.workflow }}
+            - **Run ID:** ${{ github.run_id }}
+            
+            ## 🚀 After Merge
+            
+            Once this PR is merged:
+            - Content will be available in the main branch
+            - The `dispatch-update.yml` workflow will trigger
+            - Content will be synced to the Hugo repository
+            - Website will be updated with new content
+            
+            ---
+            
+            *This PR was automatically created from GitHub Issue #${{ github.event.issue.number }}*
+          commit-message: "Add content from issue #${{ github.event.issue.number }}: ${{ steps.process-content.outputs.content_title }}"
+          delete-branch: false
+          base: main
+          
+      - name: Comment on issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ github.event.issue.number }},
+              body: `## 🎉 Content Processing Complete!
+              
+              Your content submission has been processed successfully!
+              
+              ### 📋 What was created:
+              
+              - **Content File:** ${{ steps.process-content.outputs.file_path }}
+              - **Branch:** \`${{ steps.branch-name.outputs.branch_name }}\`
+              - **Pull Request:** [Content Update: ${{ steps.process-content.outputs.content_title }}](https://github.com/${{ github.repository }}/pull/${{ steps.create-pr.outputs.pull-request-number }})
+              
+              ### 🔄 Next Steps:
+              
+              1. **Review the pull request** above
+              2. **Edit content if needed** (you can edit directly in the PR)
+              3. **Approve and merge** when ready
+              4. **Content will be synced** to the Hugo repository automatically
+              
+              ### 📁 File Details:
+              
+              - **Type:** ${{ steps.process-content.outputs.content_type }}
+              - **Title:** ${{ steps.process-content.outputs.content_title }}
+              - **Target:** ${{ steps.process-content.outputs.target_folder }}
+              - **Hugo Destination:** ${{ steps.process-content.outputs.hugo_destination }}
+              
+              ---
+              
+              *This comment was automatically added by the content processing workflow.*`
+            });
+            
+      - name: Output results
+        run: |
+          echo "✅ Content processing completed successfully!"
+          echo "🌿 Branch: ${{ steps.branch-name.outputs.branch_name }}"
+          echo "📁 File: ${{ steps.process-content.outputs.file_path }}"
+          echo "🔗 Pull Request: https://github.com/${{ github.repository }}/pull/${{ steps.create-pr.outputs.pull-request-number }}"
+          echo "📝 Content Type: ${{ steps.process-content.outputs.content_type }}"
+          echo "🎯 Hugo Destination: ${{ steps.process-content.outputs.hugo_destination }}"
+          echo "📋 Issue: #${{ github.event.issue.number }}"
