@@ -124,18 +124,12 @@ class ContentSubmissionHandler {
     }
     
             async submitContent(data) {
-            // In a real implementation, this would send to your backend or Netlify
-            // For now, we'll simulate the submission process
+            console.log('🚀 Submitting content:', data);
             
-            console.log('Submitting content:', data);
-            
-            // Simulate API call delay
-            await this.delay(2000);
-            
-            // Try to trigger the GitHub Actions workflow
+            // Try to trigger the GitHub Actions workflow first
             if (window.contentWorkflowTrigger) {
                 try {
-                    console.log('Attempting to trigger GitHub Actions workflow...');
+                    console.log('🔧 Attempting to trigger GitHub Actions workflow...');
                     
                     // Extract title from content if not provided
                     let contentTitle = data['content-title'] || data.title;
@@ -160,22 +154,59 @@ class ContentSubmissionHandler {
                         test_mode: false
                     };
                     
-                    const result = await window.contentWorkflowTrigger.triggerWorkflow(workflowData);
-                    console.log('Workflow trigger result:', result);
+                    console.log('📋 Workflow data prepared:', workflowData);
                     
-                    if (result.success) {
+                    // Show loading state
+                    this.showStatus('🔄 Triggering GitHub Actions workflow...', 'info');
+                    
+                    const result = await window.contentWorkflowTrigger.triggerWorkflow(workflowData);
+                    console.log('📊 Workflow trigger result:', result);
+                    
+                    if (result.success && result.workflow_triggered) {
+                        // Success! Workflow was triggered
+                        this.showStatus('✅ Content submitted successfully! GitHub Actions workflow triggered.', 'success');
+                        
+                        // Show additional information
+                        setTimeout(() => {
+                            this.showStatus('🌿 Branch creation in progress... Check Actions tab for status.', 'info');
+                        }, 2000);
+                        
                         return {
                             success: true,
-                            message: 'Content submitted and workflow triggered successfully!',
-                            workflow_result: result
+                            message: 'Content submitted successfully! GitHub Actions workflow triggered.',
+                            workflow_result: result,
+                            next_steps: [
+                                'Check the Actions tab in your repository',
+                                'Look for "Create Content Update Branch and PR" workflow',
+                                'Branch will be created with format: updatecontent-dd-mm-yyyy-hh-mm-ss',
+                                'Pull request will be created for review'
+                            ]
                         };
+                    } else if (result.success) {
+                        // Some other success case
+                        this.showStatus('✅ Content submitted successfully!', 'success');
+                        return result;
+                    } else {
+                        // Workflow trigger failed
+                        throw new Error(result.message || 'Failed to trigger workflow');
                     }
+                    
                 } catch (error) {
-                    console.warn('Failed to trigger workflow, falling back to simulation:', error);
+                    console.warn('⚠️ Failed to trigger workflow, falling back to simulation:', error);
+                    this.showStatus('⚠️ Workflow trigger failed, using fallback method...', 'warning');
+                    
+                    // Fall back to simulation after a delay
+                    await this.delay(1000);
                 }
             }
             
-            // Fallback to simulation if workflow trigger fails
+            // Fallback to simulation if workflow trigger fails or doesn't exist
+            console.log('🔄 Using fallback submission method...');
+            this.showStatus('🔄 Processing content submission...', 'info');
+            
+            // Simulate API call delay
+            await this.delay(2000);
+            
             const submissionMethod = this.getSubmissionMethod();
             
             switch (submissionMethod) {
