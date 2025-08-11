@@ -5,4 +5,4 @@ description: "Collection of video pages"
 
 # Video Single Collection
 
-This section contains all video pages that are managed through the Video-Single folder system.
+Đây vốn là nơi tập hợp những bài không quá đủ/nhiều thông tin, và chỉ đăng một lần (giá trị #BaoCaoSu) vốn chỉ xem một lần và không có giá trị nhiều.
