@@ -17,4 +17,4 @@ slug: "\"testingarea\""
 </video>
 {{< /rawhtml >}}
 
-{{< image-caption src="https://files.catbox.moe/gntzpo.jpeg" alt="Sample image" caption="Hình con cáo trốn sau cây" class="custom-style" >}}
+{{< image-caption src="https://files.catbox.moe/gntzpo.jpeg" alt="Hình con cáo trốn sau cây" caption="Hình con cáo trốn sau cây" >}}
