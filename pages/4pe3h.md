@@ -1,0 +1,24 @@
+---
+uid: RrtyaLuXLekFgLBYfUMB
+title: "Biểu diễn đu vòng -> Gãy cổ"
+slug: 4pe3h
+alias: ""
+published_date: "2024-08-16T12:09:34.819226+00:00"
+tags: ""
+draft: false
+discoverable: True
+is_page: True
+canonical_url: ""
+description: ""
+image: ""
+lang: ""
+class_name: ""
+first_published_at: "2024-08-16T12:09:34.819226+00:00"
+---
+
+{{< rawhtml >}}
+<video width="700" height="350" controls="">
+<source src="https://pomf2.lain.la/f/sv774shf.mp4" type="video/mp4">
+Your browser does not support HTML video.
+</video>
+{{< /rawhtml >}}

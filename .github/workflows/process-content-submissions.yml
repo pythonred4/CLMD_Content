@@ -1,0 +1,141 @@
+name: Process Content Submissions
+on:
+  repository_dispatch:
+    types:
+      - process-content-submission
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'Test mode (dry run)'
+        required: false
+        default: 'false'
+        type: boolean
+      force_process:
+        description: 'Force process all pending submissions'
+        required: false
+        default: 'false'
+        type: boolean
+      test_content:
+        description: 'Test content to process'
+        required: false
+        default: '# Test Content\n\nThis is test content for manual testing.'
+        type: string
+      test_content_type:
+        description: 'Test content type'
+        required: false
+        default: 'post-single'
+        type: choice
+        options:
+          - video-single
+          - post-single
+          - posts
+          - pages
+
+jobs:
+  process-submission:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests pyyaml python-dateutil
+
+      - name: Process content submission
+        id: process
+        run: |
+          python .github/scripts/process_submission.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+          TEST_MODE: ${{ github.event.inputs.test_mode || 'false' }}
+          FORCE_PROCESS: ${{ github.event.inputs.force_process || 'false' }}
+          TEST_CONTENT: ${{ github.event.inputs.test_content || '' }}
+          TEST_CONTENT_TYPE: ${{ github.event.inputs.test_content_type || 'post-single' }}
+
+      - name: Create Pull Request
+        if: steps.process.outputs.has_changes == 'true' && steps.process.outputs.test_mode != 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: content-update-${{ github.run_id }}
+          title: "Auto-import content submission - ${{ steps.process.outputs.submission_title }}"
+          body: |
+            ## Content Submission Import
+            
+            **Submission ID:** ${{ steps.process.outputs.submission_id }}
+            **Title:** ${{ steps.process.outputs.submission_title }}
+            **Type:** ${{ steps.process.outputs.content_type }}
+            **Language:** ${{ steps.process.outputs.language }}
+            **Rating:** ${{ steps.process.outputs.rating }}
+            
+            **Content Preview:**
+            ```
+            ${{ steps.process.outputs.content_preview }}
+            ```
+            
+            **Tags:** ${{ steps.process.outputs.tags }}
+            
+            This content was submitted via the anonymous submission form and has been automatically processed.
+            
+            **Review Required:** Please review this content before merging.
+            
+            **Files Added:**
+            - ${{ steps.process.outputs.target_path }}
+            
+            **Processing Details:**
+            - Processed at: ${{ steps.process.outputs.processed_at }}
+            - Submission timestamp: ${{ steps.process.outputs.submitted_at }}
+            - Content length: ${{ steps.process.outputs.content_length }} characters
+            
+            **Next Steps:**
+            1. Review the content for quality and appropriateness
+            2. Check if the content fits the repository's theme
+            3. Verify language and content rating are appropriate
+            4. Merge if approved, or request changes if needed
+          commit-message: "Auto-import: ${{ steps.process.outputs.submission_title }}"
+          delete-branch: true
+
+      - name: Comment on issue
+        if: steps.process.outputs.has_changes == 'true'
+        run: |
+          if [ "${{ steps.process.outputs.test_mode }}" = "true" ]; then
+            echo "Test mode - would create PR for: ${{ steps.process.outputs.submission_title }}"
+          else
+            echo "Created PR for content submission: ${{ steps.process.outputs.submission_title }}"
+          fi
+
+      - name: Update submission status
+        if: steps.process.outputs.has_changes == 'true' && steps.process.outputs.test_mode != 'true'
+        run: |
+          echo "Updating submission status for: ${{ steps.process.outputs.submission_id }}"
+          # This could be extended to mark submissions as processed in Netlify
+          # or update a tracking system
+
+  notify-main-repo:
+    needs: process-submission
+    if: needs.process-submission.outputs.has_changes == 'true' && needs.process-submission.outputs.test_mode != 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Notify main repository to update submodule
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: vsmz4laj7n/HugoTesting
+          event-type: update-content-submodule
+          client-payload: '{"submission_id": "${{ needs.process-submission.outputs.submission_id }}", "title": "${{ needs.process-submission.outputs.submission_title }}", "status": "imported", "trigger": "content_submission"}'
