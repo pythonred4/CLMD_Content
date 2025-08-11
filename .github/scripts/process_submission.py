@@ -27,18 +27,16 @@ class ContentProcessor:
         
         # Content type mappings
         self.content_type_mappings = {
-            'article': 'articles',
-            'story': 'stories',
-            'poem': 'poems',
-            'essay': 'essays',
-            'review': 'reviews',
-            'other': 'misc'
+            'video-single': 'videos',
+            'post-single': 'posts',
+            'posts': 'posts',
+            'pages': 'pages'
         }
         
-        # Language mappings
+        # Language mappings - default to Vietnamese since form is in Vietnamese
         self.language_mappings = {
-            'en': 'english',
             'vi': 'vietnamese',
+            'en': 'english',
             'my': 'myanmar',
             'th': 'thai',
             'other': 'other'
@@ -90,33 +88,38 @@ class ContentProcessor:
         
         return {
             'id': submission.get('id'),
-            'title': form_data.get('title', '').strip(),
             'content_type': form_data.get('content-type', '').strip(),
-            'author': form_data.get('author', '').strip() or 'Anonymous Contributor',
+            'summary': form_data.get('summary', '').strip(),
             'content': form_data.get('content', '').strip(),
-            'tags': form_data.get('tags', '').strip(),
-            'language': form_data.get('language', '').strip(),
-            'content_rating': form_data.get('content-rating', '').strip(),
-            'notes': form_data.get('notes', '').strip(),
             'submitted_at': submission.get('created_at', datetime.now().isoformat()),
             'bot_field': form_data.get('bot-field', '')  # Honeypot field
         }
 
     def _get_test_submission(self):
         """Generate a test submission for testing purposes"""
-        return {
-            'id': f'test-{datetime.now().strftime("%Y%m%d-%H%M%S")}',
-            'title': 'Test Content Submission',
-            'content_type': 'article',
-            'author': 'Anonymous Contributor',
-            'content': '# Test Article\n\nThis is a test article submitted via the form.\n\n## Features\n\n- Markdown support\n- Multiple sections\n- Code examples\n\n```python\nprint("Hello, World!")\n```',
-            'tags': 'test, demo, markdown',
-            'language': 'en',
-            'content_rating': 'G',
-            'notes': 'This is a test submission to verify the workflow.',
-            'submitted_at': datetime.now().isoformat(),
-            'bot_field': ''
-        }
+        # Check if we have manual test inputs from workflow dispatch
+        test_content = os.getenv('TEST_CONTENT', '')
+        test_content_type = os.getenv('TEST_CONTENT_TYPE', 'post-single')
+        
+        if test_content:
+            return {
+                'id': f'test-{datetime.now().strftime("%Y%m%d-%H%M%S")}',
+                'content_type': test_content_type,
+                'summary': 'Test content from manual workflow dispatch',
+                'content': test_content,
+                'submitted_at': datetime.now().isoformat(),
+                'bot_field': ''
+            }
+        else:
+            # Default test submission
+            return {
+                'id': f'test-{datetime.now().strftime("%Y%m%d-%H%M%S")}',
+                'content_type': 'post-single',
+                'summary': 'Bài viết test để kiểm tra workflow gửi nội dung',
+                'content': '# Bài Viết Test\n\nĐây là bài viết test được gửi qua form.\n\n## Tính Năng\n\n- Hỗ trợ Markdown\n- Nhiều phần khác nhau\n- Ví dụ code\n\n```python\nprint("Xin chào, Thế giới!")\n```\n\n## Kết Luận\n\nForm hoạt động tốt!',
+                'submitted_at': datetime.now().isoformat(),
+                'bot_field': ''
+            }
 
     def validate_submission(self, submission):
         """Validate the content submission"""
@@ -127,8 +130,8 @@ class ContentProcessor:
             errors.append("Bot field filled - likely spam")
             return errors
         
-        # Required fields
-        required_fields = ['title', 'content', 'content_type', 'language', 'content_rating']
+        # Required fields - only content-type and content are required
+        required_fields = ['content_type', 'content']
         for field in required_fields:
             if not submission.get(field):
                 errors.append(f"Missing required field: {field}")
@@ -136,33 +139,30 @@ class ContentProcessor:
         # Content length validation
         if submission.get('content'):
             content_length = len(submission['content'])
-            if content_length > 10000:
-                errors.append(f"Content too long: {content_length} characters (max: 10000)")
+            if content_length > 50000:  # Increased limit for markdown content
+                errors.append(f"Content too long: {content_length} characters (max: 50000)")
             elif content_length < 10:
                 errors.append(f"Content too short: {content_length} characters (min: 10)")
-        
-        # Title length validation
-        if submission.get('title'):
-            title_length = len(submission['title'])
-            if title_length > 200:
-                errors.append(f"Title too long: {title_length} characters (max: 200)")
-            elif title_length < 3:
-                errors.append(f"Title too short: {title_length} characters (min: 3)")
         
         # Content type validation
         valid_types = list(self.content_type_mappings.keys())
         if submission.get('content_type') and submission['content_type'] not in valid_types:
             errors.append(f"Invalid content type: {submission['content_type']}. Valid types: {', '.join(valid_types)}")
         
-        # Language validation
-        valid_languages = list(self.language_mappings.keys())
-        if submission.get('language') and submission['language'] not in valid_languages:
-            errors.append(f"Invalid language: {submission['language']}. Valid languages: {', '.join(valid_languages)}")
-        
-        # Rating validation
-        valid_ratings = ['G', 'PG', 'PG-13', 'R', 'NC-17']
-        if submission.get('content_rating') and submission['content_rating'] not in valid_ratings:
-            errors.append(f"Invalid content rating: {submission['content_rating']}. Valid ratings: {', '.join(valid_ratings)}")
+        # Set default values for missing optional fields
+        if not submission.get('language'):
+            submission['language'] = 'vi'  # Default to Vietnamese
+        if not submission.get('content_rating'):
+            submission['content_rating'] = 'G'  # Default to General
+        if not submission.get('title'):
+            # Extract title from content if available
+            content_lines = submission.get('content', '').split('\n')
+            for line in content_lines:
+                if line.startswith('# '):
+                    submission['title'] = line[2:].strip()
+                    break
+            if not submission.get('title'):
+                submission['title'] = f"Content Submission - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
         
         return errors
 
@@ -183,10 +183,12 @@ class ContentProcessor:
         title_slug = self.sanitize_filename(submission['title'].lower())
         filename = f"{date_str}-{title_slug}.md"
         
-        # Parse tags
+        # Parse tags from summary if available
         tags = []
-        if submission.get('tags'):
-            tags = [tag.strip() for tag in submission['tags'].split(',') if tag.strip()]
+        if submission.get('summary'):
+            # Extract potential tags from summary
+            summary_words = submission['summary'].split()
+            tags = [word.strip('.,!?') for word in summary_words if len(word) > 3][:5]  # Limit to 5 tags
         
         # Create front matter
         front_matter = {
@@ -198,20 +200,21 @@ class ContentProcessor:
             'rating': submission['content_rating'],
             'submission_id': submission['id'],
             'submitted_at': submission['submitted_at'],
-            'author': submission['author'],
+            'author': 'Anonymous Contributor',
             'tags': tags
         }
         
-        if submission.get('notes'):
-            front_matter['notes'] = submission['notes']
+        # Add summary if available
+        if submission.get('summary'):
+            front_matter['summary'] = submission['summary']
         
-        # Convert to YAML
-        yaml_content = yaml.dump(front_matter, default_flow_style=False, allow_unicode=True)
+        # Convert front matter to YAML
+        yaml_content = yaml.dump(front_matter, default_flow_style=False, allow_unicode=True, sort_keys=False)
         
-        # Create file content
-        file_content = f"---\n{yaml_content}---\n\n{submission['content']}\n"
+        # Create the full content
+        full_content = f"---\n{yaml_content}---\n\n{submission['content']}"
         
-        return filename, file_content
+        return filename, full_content
 
     def determine_target_path(self, submission):
         """Determine the target path for the content file"""

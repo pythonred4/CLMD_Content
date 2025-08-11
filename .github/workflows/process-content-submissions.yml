@@ -15,6 +15,21 @@ on:
         required: false
         default: 'false'
         type: boolean
+      test_content:
+        description: 'Test content to process'
+        required: false
+        default: '# Test Content\n\nThis is test content for manual testing.'
+        type: string
+      test_content_type:
+        description: 'Test content type'
+        required: false
+        default: 'post-single'
+        type: choice
+        options:
+          - video-single
+          - post-single
+          - posts
+          - pages
 
 jobs:
   process-submission:
@@ -48,6 +63,8 @@ jobs:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
           TEST_MODE: ${{ github.event.inputs.test_mode || 'false' }}
           FORCE_PROCESS: ${{ github.event.inputs.force_process || 'false' }}
+          TEST_CONTENT: ${{ github.event.inputs.test_content || '' }}
+          TEST_CONTENT_TYPE: ${{ github.event.inputs.test_content_type || 'post-single' }}
 
       - name: Create Pull Request
         if: steps.process.outputs.has_changes == 'true' && steps.process.outputs.test_mode != 'true'
