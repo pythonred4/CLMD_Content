@@ -1,1 +1,27 @@
---- uid: q7q6lydov7 title: "Nạn nhân quân sự của ISIS ở Tây Phi • GoreCenter" slug: "42qpirwjy" alias: "" published_date: "2025-08-12T17:12:24.024Z" tags: "" draft: false discoverable: True is_page: False canonical_url: "" description: "" image: "" lang: "" class_name: "" first_published_at: "2025-08-12T17:12:24.024Z" --- Những hình ảnh này đến từ các cuộc tấn công gần đây của nhánh Tây Phi của ISIS vào các vị trí quân sự, cho thấy các binh sĩ đã ngã xuống trong những cuộc đụng độ đó. Được lấy từ một video tuyên truyền dài khoảng 13 phút, chúng tuân theo chiến thuật thường thấy của nhóm này là lan truyền nỗi sợ hãi qua những hình ảnh tàn bạo. Các sự việc xảy ra ở Bờ Biển Ngà, Nigeria và Niger, nơi ISIS đang nỗ lực củng cố quyền kiểm soát các khu vực bất ổn. Tất cả các video và nội dung được đăng tải trên nền tảng này liên quan đến ISIS không nhằm mục đích quảng bá cho khủng bố hoặc tổ chức này. Chúng tôi mạnh mẽ lên án mọi hình thức khủng bố và các hoạt động cực đoan, bao gồm những hoạt động liên quan đến ISIS. ISIS không đại diện cho Hồi giáo. Hồi giáo là một tôn giáo của hòa bình và lòng trắc ẩn, những giá trị và giáo lý của nó không liên quan gì đến các hành vi bạo lực do tổ chức này thực hiện. Mục tiêu của chúng tôi là thông tin và giáo dục, không phải lan truyền hận thù hay ủng hộ bạo lực. ![46ngs3.jpg](https://files.catbox.moe/46ngs3.jpg) ![lz0j5q.jpg](https://files.catbox.moe/lz0j5q.jpg) ![q37ak0.jpg](https://files.catbox.moe/q37ak0.jpg) ![2eskr7.jpg](https://files.catbox.moe/2eskr7.jpg) ![8vxqn1.jpg](https://files.catbox.moe/8vxqn1.jpg) ![awgzdb.jpg](https://files.catbox.moe/awgzdb.jpg) ![gayv2p.jpg](https://files.catbox.moe/gayv2p.jpg) ![6kp66j.jpg](https://files.catbox.moe/6kp66j.jpg)
+---
+uid: q7q6lydov7
+title: "Nạn nhân quân sự của ISIS ở Tây Phi • GoreCenter"
+slug: "42qpirwjy"
+alias: ""
+published_date: "2025-08-12T17:12:24.024Z"
+tags: ""
+draft: false
+discoverable: True
+is_page: False
+canonical_url: ""
+description: ""
+image: ""
+lang: ""
+class_name: ""
+first_published_at: "2025-08-12T17:12:24.024Z"
+---
+Những hình ảnh này đến từ các cuộc tấn công gần đây của nhánh Tây Phi của ISIS vào các vị trí quân sự, cho thấy các binh sĩ đã ngã xuống trong những cuộc đụng độ đó. Được lấy từ một video tuyên truyền dài khoảng 13 phút, chúng tuân theo chiến thuật thường thấy của nhóm này là lan truyền nỗi sợ hãi qua những hình ảnh tàn bạo. Các sự việc xảy ra ở Bờ Biển Ngà, Nigeria và Niger, nơi ISIS đang nỗ lực củng cố quyền kiểm soát các khu vực bất ổn. Tất cả các video và nội dung được đăng tải trên nền tảng này liên quan đến ISIS không nhằm mục đích quảng bá cho khủng bố hoặc tổ chức này. Chúng tôi mạnh mẽ lên án mọi hình thức khủng bố và các hoạt động cực đoan, bao gồm những hoạt động liên quan đến ISIS. ISIS không đại diện cho Hồi giáo. Hồi giáo là một tôn giáo của hòa bình và lòng trắc ẩn, những giá trị và giáo lý của nó không liên quan gì đến các hành vi bạo lực do tổ chức này thực hiện. Mục tiêu của chúng tôi là thông tin và giáo dục, không phải lan truyền hận thù hay ủng hộ bạo lực.
+
+![46ngs3.jpg](https://files.catbox.moe/46ngs3.jpg)
+![lz0j5q.jpg](https://files.catbox.moe/lz0j5q.jpg)
+![q37ak0.jpg](https://files.catbox.moe/q37ak0.jpg)
+![2eskr7.jpg](https://files.catbox.moe/2eskr7.jpg)
+![8vxqn1.jpg](https://files.catbox.moe/8vxqn1.jpg)
+![awgzdb.jpg](https://files.catbox.moe/awgzdb.jpg)
+![gayv2p.jpg](https://files.catbox.moe/gayv2p.jpg)
+![6kp66j.jpg](https://files.catbox.moe/6kp66j.jpg)

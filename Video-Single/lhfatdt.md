@@ -1,1 +1,25 @@
---- uid: ljkyqb5rmkr title: "Thi thể phụ nữ Brazil bị cá piranha ăn một phần được kéo lên từ sông • GoreCenter" slug: "lhfatdt" alias: "" published_date: "2025-08-12T17:11:03.701Z" tags: "" draft: false discoverable: True is_page: False canonical_url: "" description: "" image: "" lang: "" class_name: "" first_published_at: "2025-08-12T17:11:03.701Z" --- ROLÂNDIA, PARANÁ, BRAZIL – NGÀY 8 THÁNG 8 NĂM 2025 Thi thể của một phụ nữ Brazil 52 tuổi được xác định là Sidneia José de Santana de Azevedo được một ngư dân tìm thấy trong một con sông địa phương. Vì thi thể bị cắn xé một phần, ban đầu người ta nghi ngờ cô ấy là nạn nhân của bạo lực. Tuy nhiên, sau đó, người ta phát hiện ra rằng cô ấy bị cá piranha cắn sau khi chết. Mặt, cánh tay phải và chân phải của cô bị ăn sạch đến xương. Sidneia José de Santana de Azevedo Các chuyên gia pháp y không tìm thấy dấu hiệu bạo lực trên thi thể của cô. Người ta cho rằng cô đã vô tình chết đuối trong sông. Kết quả điều tra chính thức của cảnh sát vẫn chưa được công bố. ![umu83g.jpg](https://files.catbox.moe/umu83g.jpg) ![9o6zdl.jpg](https://files.catbox.moe/9o6zdl.jpg) ![fvsyha.jpg](https://files.catbox.moe/fvsyha.jpg) ![irkavp.jpg](https://files.catbox.moe/irkavp.jpg) ![my7gue.jpg](https://files.catbox.moe/my7gue.jpg) ![qfdejj.jpg](https://files.catbox.moe/qfdejj.jpg)
+---
+uid: ljkyqb5rmkr
+title: "Thi thể phụ nữ Brazil bị cá piranha ăn một phần được kéo lên từ sông • GoreCenter"
+slug: "lhfatdt"
+alias: ""
+published_date: "2025-08-12T17:11:03.701Z"
+tags: ""
+draft: false
+discoverable: True
+is_page: False
+canonical_url: ""
+description: ""
+image: ""
+lang: ""
+class_name: ""
+first_published_at: "2025-08-12T17:11:03.701Z"
+---
+ROLÂNDIA, PARANÁ, BRAZIL – NGÀY 8 THÁNG 8 NĂM 2025 Thi thể của một phụ nữ Brazil 52 tuổi được xác định là Sidneia José de Santana de Azevedo được một ngư dân tìm thấy trong một con sông địa phương. Vì thi thể bị cắn xé một phần, ban đầu người ta nghi ngờ cô ấy là nạn nhân của bạo lực. Tuy nhiên, sau đó, người ta phát hiện ra rằng cô ấy bị cá piranha cắn sau khi chết. Mặt, cánh tay phải và chân phải của cô bị ăn sạch đến xương. Sidneia José de Santana de Azevedo Các chuyên gia pháp y không tìm thấy dấu hiệu bạo lực trên thi thể của cô. Người ta cho rằng cô đã vô tình chết đuối trong sông. Kết quả điều tra chính thức của cảnh sát vẫn chưa được công bố. 
+
+![umu83g.jpg](https://files.catbox.moe/umu83g.jpg)
+![9o6zdl.jpg](https://files.catbox.moe/9o6zdl.jpg)
+![fvsyha.jpg](https://files.catbox.moe/fvsyha.jpg)
+![irkavp.jpg](https://files.catbox.moe/irkavp.jpg)
+![my7gue.jpg](https://files.catbox.moe/my7gue.jpg)
+![qfdejj.jpg](https://files.catbox.moe/qfdejj.jpg)
