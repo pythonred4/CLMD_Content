@@ -1,0 +1,21 @@
+---
+uid: nf76a23feyd
+title: "Người phụ nữ mất mạng dưới bánh xe tải • GoreCenter"
+slug: "98nmkqar"
+alias: ""
+published_date: "2025-08-12T17:12:42.337Z"
+tags: ""
+draft: false
+discoverable: True
+is_page: False
+canonical_url: ""
+description: ""
+image: ""
+lang: ""
+class_name: ""
+first_published_at: "2025-08-12T17:12:42.337Z"
+---
+
+Video cho thấy hậu quả của một vụ tai nạn giao thông chết người. Người phụ nữ bị nghiền nát dưới bánh xe của một chiếc xe tải nặng. Thật không may, không có thêm chi tiết nào được biết đến.
+
+https://cdn.videy.co/dlC0NS7x1.mp4

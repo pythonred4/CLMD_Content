@@ -1,0 +1,26 @@
+---
+uid: skjhnc3vyk
+title: "Vụ sát hại Jose Manuel Perez Sobayo • GoreCenter"
+slug: "dzusmm51w"
+alias: ""
+published_date: "2025-08-12T17:12:04.524Z"
+tags: ""
+draft: false
+discoverable: True
+is_page: False
+canonical_url: ""
+description: ""
+image: ""
+lang: ""
+class_name: ""
+first_published_at: "2025-08-12T17:12:04.524Z"
+---
+
+
+TIJUANA, MEXICO – THÁNG 4 NĂM 2025 Video cho thấy vụ hành quyết thành viên băng đảng Jose Manuel Perez Sobayo, người đã làm việc cho băng Chapos hơn hai năm, chủ yếu ở thành phố Mazatlán, nơi anh ta và anh trai phân phối ma túy. Tuy nhiên, tình hình ở thành phố này trở nên tồi tệ, và do các cuộc chiến ma túy, các thành viên băng Chapos đã phải chạy trốn. Bản thân Jose đã chứng kiến toàn bộ gia đình mình bị hành quyết. Anh ta tiếp tục hoạt động buôn bán ma túy ở thành phố Tijuana, nơi anh ta chạy trốn. Tuy nhiên, quyền kiểm soát buôn bán ma túy ở đó thuộc về băng Sinaloa đối thủ, cụ thể là nhánh do anh em Arzarte lãnh đạo. Đương nhiên, họ không thích ý tưởng về sự cạnh tranh, vì vậy họ đã hành quyết Jose như một lời cảnh báo – chặt đầu anh ta bằng một con dao lớn trên camera trong khi tuyên bố rằng bất kỳ thành viên nào của băng Chapos cố gắng vào Tijuana sẽ bị tiêu diệt như một con chuột. Thi thể của anh ta – cụ thể là đầu và tay bị chặt đứt – được vứt trên một con đường trong thành phố như một lời cảnh báo, kèm theo một lời đe dọa viết tay dành cho bất kỳ ai có ý định làm điều tương tự. Phần thi thể bị vứt bỏ của anh ta Ngoài video hành quyết, một video riêng về cuộc thẩm vấn của anh ta cũng xuất hiện trực tuyến, trong đó anh ta thú nhận mọi thứ, nói về hoạt động buôn bán ma túy của mình, anh trai và lãnh đạo El Pelón. Video 1 - Thẩm vấn Video 2 - Hành quyết BẢN DỊCH: Tù nhân: Chào buổi chiều. Tên tôi là Jose Manuel Perez Sobayo và tôi đến từ Mazatlán, Sinaloa. Tôi đã làm việc ở đó cùng với anh trai tôi Kevin Augustine Perez, chú tôi Jonathan de Jesus Perez Luna, và chú khác của tôi Alan Manuel Perez Luna. Chúng tôi đã chạy trốn khỏi Mazatlán sau khi anh trai tôi và hai chú bị giết và chôn. Kẻ bắt cóc #1: Anh trai anh được biết đến với tên gì? Tù nhân: Anh ấy được gọi là El Peque, El Morillo. Một trong hai biệt danh đó. Kẻ bắt cóc #1: Anh đã tham gia vào việc buôn bán ma túy bao lâu? Tù nhân: Anh trai tôi đã tham gia khoảng hai năm. Kẻ bắt cóc #1: Còn anh thì sao? Tù nhân: Tôi đã tham gia khoảng thời gian tương tự như anh ấy. Kẻ bắt cóc #1: Được rồi. Tù nhân: Chúng tôi phải chạy trốn đến Tijuana vì tình hình trở nên quá tệ. Tôi bị đe dọa sẽ bị giết nếu quay lại Mazatlán. Các thành viên gia đình của tôi đã bị giết. Kẻ bắt cóc #2: Cụ thể anh làm gì để kiếm sống ở Mazatlán? Tù nhân: Tôi làm việc vào buổi tối ở các điểm buôn bán ma túy khác nhau, phân phối ma túy ở Mazatlán. Cụ thể là các khu vực Valle Bonito, La Riviera và Buenos Aires. Họ gọi đó là CVA, CVA. Kẻ bắt cóc: Anh đã giết bao nhiêu người? Tù nhân: Tôi đã làm việc ở Sonoyta, Sonora trong các cuộc đấu súng, các cuộc đối đầu vũ trang và các sự kiện tội phạm diễn ra ở thành phố đó. Kẻ bắt cóc #1: Những người đứng đầu ở đó là ai? Tù nhân: Những tay hoạt động của Pelones ở Sonoyta… Kẻ bắt cóc #2: Đó sẽ là băng Pelones. Tù nhân: El Pelón là lãnh đạo. Kẻ bắt cóc: Chúng tôi đã phân phối cho băng Chapos nhưng cuối cùng chuyển bên do thiếu hỗ trợ. Rõ ràng là họ đang thua và giao nộp người của chính họ chỉ để tồn tại. Có quá nhiều tổn thất. Ban đầu họ tuyên bố rằng cuộc chiến sẽ không kéo dài quá hai tháng. Tuy nhiên, cuộc xung đột này đã kéo dài hai năm và vẫn đang tiếp diễn. Vì vậy, tôi đến Tijuana và hiện tại tôi đang ở đây.
+
+https://cdn.videy.co/vT4CzEqd1.mp4
+https://cdn.videy.co/sbC8mT231.mp4
+![lifqen.jpg](https://files.catbox.moe/lifqen.jpg)
+![vv7st9.jpg](https://files.catbox.moe/vv7st9.jpg)
+![ehy4ju.jpg](https://files.catbox.moe/ehy4ju.jpg)
