@@ -1,31 +1,32 @@
-name: Delete Merged Branches
+name: Delete Merged or Closed Branches
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     types: [closed]
 
 jobs:
-  delete-merged-branches:
+  delete-branch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Delete merged branches matching pattern
+      - name: Delete merged or closed branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
         run: |
-          # Fetch all branches
-          git fetch --prune
-          
-          # Get list of merged branches
-          merged_branches=$(git branch -r --merged origin/main | grep 'origin/update-content-' | sed 's/origin\///')
-          
-          # Loop through each merged branch and delete it
-          for branch in $merged_branches; do
-            echo "Deleting branch: $branch"
-            git push origin --delete "$branch"
-          done
+          # Check if branch matches the pattern update-content-dd-mm-yy-hh-mm-ss
+          if [[ $BRANCH_NAME =~ ^update-content-[0-3][0-9]-[0-1][0-9]-[0-9]{2}-[0-2][0-9]-[0-5][0-9]-[0-5][0-9]$ ]]; then
+            echo "Branch $BRANCH_NAME matches pattern, checking if it can be deleted..."
+            
+            # Check if branch is merged or PR is closed
+            if [ "${{ github.event.pull_request.merged }}" = "true" ] || [ "${{ github.event.action }}" = "closed" ]; then
+              echo "Deleting branch $BRANCH_NAME..."
+              git push origin --delete $BRANCH_NAME
+            else
+              echo "Branch $BRANCH_NAME is not merged or closed, skipping deletion."
+            fi
+          else
+            echo "Branch $BRANCH_NAME does not match pattern, skipping."
+          fi
