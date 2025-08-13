@@ -1,0 +1,55 @@
+name: Delete Old Branches
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
+  workflow_dispatch: # Allows manual trigger
+
+permissions:
+  contents: write # Required for branch deletion
+
+jobs:
+  delete-old-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Delete old branches
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          #!/bin/bash
+          set -e
+
+          # Define the branch pattern and age threshold (in days)
+          BRANCH_PATTERN="update-content-*"
+          AGE_DAYS=21
+
+          # Get current date in seconds since epoch
+          CURRENT_TIME=$(date +%s)
+          THRESHOLD_TIME=$((CURRENT_TIME - AGE_DAYS * 24 * 60 * 60))
+
+          # Fetch all branches
+          git fetch --all
+
+          # List all remote branches matching the pattern
+          BRANCHES=$(git branch -r | grep -E "origin/$BRANCH_PATTERN" | sed 's|origin/||')
+
+          for BRANCH in $BRANCHES; do
+            # Get the last commit date of the branch
+            LAST_COMMIT_DATE=$(git log -1 --format=%ct origin/$BRANCH 2>/dev/null || echo 0)
+
+            if [ $LAST_COMMIT_DATE -eq 0 ]; then
+              echo "Skipping branch $BRANCH (no commits or not found)"
+              continue
+            fi
+
+            # Check if the branch is older than the threshold
+            if [ $LAST_COMMIT_DATE -lt $THRESHOLD_TIME ]; then
+              echo "Deleting branch $BRANCH (last commit: $(date -d @$LAST_COMMIT_DATE))"
+              git push origin --delete $BRANCH
+            else
+              echo "Branch $BRANCH is not old enough (last commit: $(date -d @$LAST_COMMIT_DATE))"
+            fi
+          done
