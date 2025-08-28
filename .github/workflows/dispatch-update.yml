@@ -3,13 +3,21 @@ on:
   push:
     branches:
       - main
+
 jobs:
   dispatch:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Repository Dispatch
+      - name: Dispatch to Repo A
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.PAT }}
           repository: vsmz4laj7n/HugoTesting
+          event-type: update-content-submodule
+
+      - name: Dispatch to Repo B
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PAT2 }}
+          repository: GreyPerson2/HugoTesting
           event-type: update-content-submodule
