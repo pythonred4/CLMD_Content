@@ -1,0 +1,32 @@
+---
+uid: e3181110-6cf
+title: Người phụ nữ Trung Quốc tự tử bằng cách nhảy lầu • GoreCenter
+slug: ieiz6l
+alias: ''
+published_date: '2025-09-06T10:09:35.142654'
+tags: ''
+draft: false
+discoverable: true
+is_page: false
+canonical_url: ''
+description: ''
+image: ''
+lang: ''
+class_name: ''
+first_published_at: '2025-09-06T10:09:35.142654'
+---
+
+TRUNG QUỐC Vì những lý do không rõ, một phụ nữ trẻ đã chọn cách kết thúc cuộc đời mình bằng cách nhảy từ mái của một tòa nhà chung cư. Cô lặng lẽ rời đi, không để lại nhân chứng. Thi thể của cô đập xuống vỉa hè trong một con hẻm hẹp, khiến cô tử vong ngay lập tức, chỉ được phát hiện sau đó khi một tài xế đi ngang qua vô tình cán qua. Chính quyền đã cử các chuyên gia pháp y đến để loại trừ khả năng có hành vi phạm tội. Họ đã ghi lại hiện trường một cách chi tiết, kiểm tra thi thể của cô, lục soát căn hộ của cô và nghiên cứu quỹ đạo của cú ngã. Phân tích như vậy giúp xác định liệu một người có tự nguyện nhảy hay bị ép rơi khỏi lan can. Cuối cùng, các nhà điều tra không tìm thấy dấu hiệu của một vụ giết người. Vụ việc bi thảm này được chính thức phân loại là một vụ tự tử.
+
+https://files.catbox.moe/mqxwr2.jpeg
+https://files.catbox.moe/juj651.jpeg
+https://files.catbox.moe/asctud.jpeg
+https://files.catbox.moe/91nfj8.jpeg
+https://files.catbox.moe/l3sps4.jpeg
+https://files.catbox.moe/rlpfrv.jpeg
+https://files.catbox.moe/jz9bif.jpeg
+https://files.catbox.moe/g5x041.jpeg
+https://files.catbox.moe/6hvjcp.jpeg
+https://files.catbox.moe/mk3odd.jpeg
+https://files.catbox.moe/5siybr.jpeg
+https://files.catbox.moe/3eb4rd.jpeg
