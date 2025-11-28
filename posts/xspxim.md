@@ -25,3 +25,14 @@ first_published_at: "2025-11-28T09:06:16.090Z"
 `https://drive.google.com/file/d/1Kl8wmH96VV3BDaiscD1Qc2CIdIiNqfkD/preview`
 
 > Download link: [Catbox](https://files.catbox.moe/odfim6.pdf) | [Pomf](https://pomf2.lain.la/f/iokxm3ge.pdf)
+
+Bài post này cũng bao gồm hai bức ảnh được cho là người có liên quan tới cập nhật 23/11/2025 đang bị điều tra -> **Chưa được xác thực và không chịu trách nhiệm cho việc tuyên truyền sai sự thật.**
+
+- **LƯU Ý VỀ 2 BỨC ẢNH CUỐI: Thông tin chưa xác thực.**
+
+{{< collapsible summary="Thông tin chưa xác thực - " >}}
+
+![erle6l](https://files.catbox.moe/erle6l.jpg)
+
+![h133hh](https://files.catbox.moe/h133hh.jpg)
+{{< /collapsible >}}
