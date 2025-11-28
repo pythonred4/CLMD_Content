@@ -47,4 +47,4 @@ first_published_at: "2025-11-28T09:19:45.489Z"
 
 ## Archived:
 
-> *[Pending]*
+> https://archive.org/details/nxd-v-2-vi/NX%C4%90_CASE/SignedFiles/3f1f286231e4ae3431473e31fc4907fb427a3cb562b7757d5a98f3ba2257cc71.pdf
