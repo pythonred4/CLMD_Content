@@ -1,9 +1,9 @@
 ---
-uid: hy59ohiuoab
+uid: 17kz0h5cuz4
 title: "Update về NXĐ [28-11-2025 - Post]"
 slug: "xspxim"
 alias: ""
-published_date: "2025-11-28T09:02:50.710Z"
+published_date: "2025-11-28T09:06:16.090Z"
 tags: ""
 draft: false
 discoverable: True
@@ -13,7 +13,7 @@ description: ""
 image: ""
 lang: ""
 class_name: ""
-first_published_at: "2025-11-28T09:02:50.710Z"
+first_published_at: "2025-11-28T09:06:16.090Z"
 ---
 
 ## [Kiếm bài đăng gốc click vào đây](/09siprvj)
@@ -24,6 +24,7 @@ first_published_at: "2025-11-28T09:02:50.710Z"
 
 {{< /rawhtml >}}
 
+> Link tải: [Catbox](https://files.catbox.moe/i5a0at.pdf) | [Pomf](https://pomf2.lain.la/f/53063tl9.pdf)
 
 {{< rawhtml >}}
 
@@ -31,3 +32,4 @@ first_published_at: "2025-11-28T09:02:50.710Z"
 
 {{< /rawhtml >}}
 
+> Download link: [Catbox](https://files.catbox.moe/odfim6.pdf) | [Pomf](https://pomf2.lain.la/f/iokxm3ge.pdf)
