@@ -1,6 +1,6 @@
 ---
 uid: zcfxm1eq88
-title: "Những tài xế giao hàng giả mạo của UPS đã cướp tài sản và sát hại ba người, trong đó có một người mẹ, ngay trước mặt các con của bà trong một vụ đột nhập nhà (bản gốc không kiểm duyệt, độc quyền của WPD). Coon Rapids, Minnesota, Hoa Kỳ, ngày 26 tháng 1 năm 2024"
+title: "Những tài xế giao hàng giả mạo của UPS đã cướp tài sản và sát hại ba người, trong đó có một người mẹ, ngay trước mặt các con của bà trong một vụ đột nhập nhà. Coon Rapids, Minnesota, Hoa Kỳ, ngày 26 tháng 1 năm 2024"
 slug: "yur8v59"
 alias: ""
 published_date: "2025-12-28T04:06:55.053Z"
